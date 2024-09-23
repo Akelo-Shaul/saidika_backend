@@ -1,28 +1,39 @@
 package com.shaul.saidikaV3.controllers;
 
-import com.shaul.saidikaV3.entities.offered_services;
 import com.shaul.saidikaV3.entities.service_finder;
 import com.shaul.saidikaV3.entities.service_provider;
-import com.shaul.saidikaV3.services.service_finder_service;
+import com.shaul.saidikaV3.requestModels.loginRequestmodel;
+import com.shaul.saidikaV3.requestModels.registerRequestModel;
+import com.shaul.saidikaV3.responsemodels.login_response;
 import com.shaul.saidikaV3.services.service_provider_service;
+import com.shaul.saidikaV3.utils.GeneralUtils;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RequestMapping("/api/v1/provider")
 @RestController
 public class service_provider_controller {
-    @Autowired
-    service_provider_service provider_service;
+          @Autowired
+     service_provider_service provider_service;
 
 
-    @PostMapping()
-    public service_provider addFinder(@RequestBody service_provider provider_request_model){
-        return  provider_service.add_provider(provider_request_model);
+    @PostMapping("/register")
+    public ResponseEntity<String> add_provider(@RequestBody  @Valid registerRequestModel provider_request_model,BindingResult bindingResult){
+      if(bindingResult.hasErrors())
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(GeneralUtils.createErrorMessage(bindingResult));
+        else
+   
+
+      return  provider_service.registerProvider(provider_request_model);
     }
 
     @GetMapping() //TODO remove this nonsense
@@ -30,18 +41,21 @@ public class service_provider_controller {
         return provider_service.get_all_providers();
     }
 
-   @GetMapping("/get_services_offered/{id}")
-    public ResponseEntity<?> getServicesOffered (@PathVariable UUID id){
-      service_provider serviceProvider= provider_service.find_by_id(id).orElse(null);
-       if (serviceProvider.getOfferedServices().isEmpty()) {
-           return new ResponseEntity<>("No services", HttpStatus.NOT_FOUND);
+   @PreAuthorize("hasAuthority('SERVICE_PROVIDER')")
+    @GetMapping("/activeUser")
+    public ResponseEntity<service_provider> activeUser()
+    {
+        return provider_service.activeUser();
+    }
 
-       }else{
-           return  ResponseEntity.ok(serviceProvider.getOfferedServices());
-       }
-
-   }
-
+@PostMapping("/login")
+    public ResponseEntity<login_response> login(@RequestBody @Valid loginRequestmodel loginRequest, BindingResult bindingResult)
+    {
+        if(bindingResult.hasErrors())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(login_response.builder().message(GeneralUtils.createErrorMessage(bindingResult)).build());
+        else
+            return provider_service.login(loginRequest);
+    }
 
 
 }
