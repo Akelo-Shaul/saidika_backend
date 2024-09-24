@@ -3,6 +3,7 @@ package com.shaul.saidikaV3.entities;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.UUID;
 
 @Data
 @Entity
+@Builder
 @JsonIgnoreProperties({"rvs"})
 public class offered_services {
 
