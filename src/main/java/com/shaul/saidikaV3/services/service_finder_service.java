@@ -1,4 +1,15 @@
 package com.shaul.saidikaV3.services;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.shaul.saidikaV3.auth.AuthService;
 import com.shaul.saidikaV3.auth.Authorities.AccountRoles;
 import com.shaul.saidikaV3.configs.AuthenticationManagers.saidika_findersAuthenticationManager;
@@ -14,22 +25,14 @@ import com.shaul.saidikaV3.responsemodels.login_response;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
 @Service
 public class service_finder_service {
     @Autowired
     AuthService authService;
 
+
    @Autowired
+   @Qualifier("enf") 
    private saidika_findersAuthenticationManager authenticationManager;
 
     @Autowired
@@ -59,8 +62,8 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
 
         service_finder serviceFinder = finderOptional.get();
 
-        String authorization = authService.loginUser(serviceFinder.getId(), loginRequest.getEmail(), loginRequest.getPassword(), authenticationManager,AccountRoles.SERVICE_FINDER);
-        return ResponseEntity.ok(login_response.builder().message("Login Successful").Authorization(authorization).twoFactorEnabled(authService.get2FAEnabled(serviceFinder.getId(),AccountRoles.SERVICE_FINDER)).build());
+        String authorization = authService.loginUser(serviceFinder.getId(), loginRequest.getEmail(), loginRequest.getPassword(), authenticationManager,AccountRoles.FINDER);
+        return ResponseEntity.ok(login_response.builder().message("Login Successful").Authorization(authorization).twoFactorEnabled(authService.get2FAEnabled(serviceFinder.getId(),AccountRoles.FINDER)).profile(serviceFinder.getId()).build());
     }
 
 

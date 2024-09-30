@@ -43,7 +43,7 @@ public class AuthorizationToken {
         return (!loggedOut&&new Date().before(new Date(expiryTime)));
     }
 
-    private UUID profileId;
+    private UUID profileid;
 
     @JsonIgnore
     private String verification;

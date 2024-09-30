@@ -37,7 +37,7 @@ public class service_finder_controller {
             return finder_service.login(loginRequest);
     }
 
-    @PreAuthorize("hasAuthority('SERVICE_FINDER')")
+    @PreAuthorize("hasAuthority('FINDER')")
     @GetMapping("/activeUser")
     public ResponseEntity<service_finder> activeUser()
     {
@@ -55,7 +55,7 @@ public class service_finder_controller {
       return  finder_service.registerFinder(finder_request_model);
     }
 
-    @GetMapping() //TODO remove this nonsense
+    @GetMapping() 
     public List<service_finder> get_all_finders(){
      return finder_service.get_all();
     }

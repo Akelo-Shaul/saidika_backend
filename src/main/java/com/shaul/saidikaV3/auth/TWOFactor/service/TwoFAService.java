@@ -1,10 +1,10 @@
 package com.shaul.saidikaV3.auth.TWOFactor.service;
 
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import jakarta.servlet.http.HttpServletRequest;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
+
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.shaul.saidikaV3.auth.AuthService;
-import com.shaul.saidikaV3.auth.TOTPAuthenticator;
 import com.shaul.saidikaV3.auth.AuthToken.AuthorizationToken;
 import com.shaul.saidikaV3.auth.AuthToken.TokenRepository;
+import com.shaul.saidikaV3.auth.TOTPAuthenticator;
 import com.shaul.saidikaV3.auth.TWOFactor.MissingTOTPKeyAuthenticatorException;
 import com.shaul.saidikaV3.auth.TWOFactor.TwoFactor;
 import com.shaul.saidikaV3.auth.TWOFactor.TwoFactorRepository;
@@ -26,9 +26,10 @@ import com.shaul.saidikaV3.entities.Users;
 import com.shaul.saidikaV3.requestModels.VerifyCodeRequest;
 import com.shaul.saidikaV3.utils.ConvertionUtils;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Optional;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class TwoFAService {
@@ -54,7 +55,7 @@ public class TwoFAService {
 
     public ResponseEntity<String> status() {
         Users user=authService.getActiveProfile();
-        Optional<TwoFactor> optionalTwoFactor=twoFactorRepository.findByUserUid(user.getId());
+        Optional<TwoFactor> optionalTwoFactor=twoFactorRepository.findByUser_id(user.getId());
         if(optionalTwoFactor.isPresent()&&optionalTwoFactor.get().getIsVerified())
             return ResponseEntity.ok("Enabled");
         else
@@ -65,7 +66,7 @@ public class TwoFAService {
     public ResponseEntity<String> disable() {
 
         Users user=authService.getActiveProfile();
-        Optional<TwoFactor> optionalTwoFactor=twoFactorRepository.findByUserUid(user.getId());
+        Optional<TwoFactor> optionalTwoFactor=twoFactorRepository.findByUser_id(user.getId());
         if(optionalTwoFactor.isPresent())
         {
             twoFactorRepository.delete(optionalTwoFactor.get());
@@ -79,9 +80,8 @@ public class TwoFAService {
         try {
             return generateQRCode(generateOTPProtocol());
         } catch (Throwable e) {
-//            throw new RuntimeException(e);
-            e.printStackTrace();
-            return "Error";
+
+                        return "Error";
         }
 
 
@@ -125,6 +125,7 @@ public class TwoFAService {
         return true;
     }
 
+    @SuppressWarnings({ "deprecation", "unused" })
     public ResponseEntity<String> verify2FA(VerifyCodeRequest verifyCodeRequest, HttpServletRequest request) {
 
         String authorization=request.getHeader("Authorization");
@@ -139,7 +140,7 @@ public class TwoFAService {
             Optional<AuthorizationToken> tmpToken=tokenRepository.findByValue(tokenString);
             if(tmpToken.isPresent()) {
                 AuthorizationToken token = tmpToken.get();
-                String secret=twoFactorRepository.findByUserUid(token.getProfileId()).get().getSecret();
+                String secret=twoFactorRepository.findByUser_id(token.getProfileid()).get().getSecret();
 
                 if(validateTotp(secret, ConvertionUtils.getInt(verifyCodeRequest.getVerificationCode())))
                 {
@@ -152,6 +153,7 @@ public class TwoFAService {
         return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).body("Verification Failed");
     }
 
+    @SuppressWarnings({"deprecation", "unused" })
     public ResponseEntity<String> enable2FA(VerifyCodeRequest verifyCodeRequest, HttpServletRequest request) {
 
         String authorization=request.getHeader("Authorization");
@@ -161,12 +163,13 @@ public class TwoFAService {
 //            try {
             String tokenString = authorization.replaceAll(init, "");
             Jws<Claims> claims = Jwts.parser().setSigningKey(SecurityConfig.jwtSecretKey).build().parseClaimsJws(tokenString);
+          
             String username = claims.getBody().getSubject();
 
             Optional<AuthorizationToken> tmpToken=tokenRepository.findByValue(tokenString);
             if(tmpToken.isPresent()) {
                 AuthorizationToken token = tmpToken.get();
-                TwoFactor twoFactor = twoFactorRepository.findByUserUid(token.getProfileId()).get();
+                TwoFactor twoFactor = twoFactorRepository.findByUser_id(token.getProfileid()).get();
                 String secret=twoFactor.getSecret();
 
                 if(validateTotp(secret, ConvertionUtils.getInt(verifyCodeRequest.getVerificationCode())))

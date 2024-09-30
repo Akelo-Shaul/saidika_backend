@@ -33,7 +33,7 @@ public class provider_DetailsService implements UserDetailsService {
         return provider_UserDetails.builder()
                 .username(username)
                 .password(user.getPassword())
-                .authorities(Set.of(new SimpleGrantedAuthority(AccountRoles.SERVICE_FINDER.name())))
+                .authorities(Set.of(new SimpleGrantedAuthority(AccountRoles.PROVIDER.name())))
                 .build();
 
     }

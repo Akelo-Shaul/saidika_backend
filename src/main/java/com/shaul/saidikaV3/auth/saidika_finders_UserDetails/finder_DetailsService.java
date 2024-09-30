@@ -33,7 +33,7 @@ public class finder_DetailsService implements UserDetailsService {
         return finder_UserDetails.builder()
                 .username(username)
                 .password(user.getPassword())
-                .authorities(Set.of(new SimpleGrantedAuthority(AccountRoles.SERVICE_FINDER.name())))
+                .authorities(Set.of(new SimpleGrantedAuthority(AccountRoles.FINDER.name())))
                 .build();
 
     }

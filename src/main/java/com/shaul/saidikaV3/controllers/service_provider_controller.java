@@ -1,6 +1,18 @@
 package com.shaul.saidikaV3.controllers;
 
-import com.shaul.saidikaV3.entities.service_finder;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.shaul.saidikaV3.entities.service_provider;
 import com.shaul.saidikaV3.requestModels.loginRequestmodel;
 import com.shaul.saidikaV3.requestModels.registerRequestModel;
@@ -9,15 +21,6 @@ import com.shaul.saidikaV3.services.service_provider_service;
 import com.shaul.saidikaV3.utils.GeneralUtils;
 
 import jakarta.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequestMapping("/api/v1/provider")
 @RestController
@@ -36,12 +39,12 @@ public class service_provider_controller {
       return  provider_service.registerProvider(provider_request_model);
     }
 
-    @GetMapping() //TODO remove this nonsense
+    @GetMapping() 
     public List<service_provider> get_allProviders(){
         return provider_service.get_all_providers();
     }
 
-   @PreAuthorize("hasAuthority('SERVICE_PROVIDER')")
+    @PreAuthorize("hasAuthority('PROVIDER')")
     @GetMapping("/activeUser")
     public ResponseEntity<service_provider> activeUser()
     {

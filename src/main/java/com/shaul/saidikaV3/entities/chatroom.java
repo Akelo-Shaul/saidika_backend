@@ -1,11 +1,13 @@
 package com.shaul.saidikaV3.entities;
 
-import jakarta.persistence.*;
+import java.util.List;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.UUID;
 
 @Data
 @Entity
