@@ -1,46 +1,66 @@
 package com.shaul.saidikaV3.controllers;
 
-import com.shaul.saidikaV3.entities.chatroom;
-import com.shaul.saidikaV3.entities.messages;
+import com.shaul.saidikaV3.auth.AuthService;
+import com.shaul.saidikaV3.entities.*;
 import com.shaul.saidikaV3.requestModels.messages_model;
 import com.shaul.saidikaV3.services.chat_service;
 import com.shaul.saidikaV3.services.messages_service;
+import com.shaul.saidikaV3.services.service_finder_service;
+import com.shaul.saidikaV3.services.service_provider_service;
+import com.shaul.saidikaV3.utils.imageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.zip.DataFormatException;
 
 @RestController
 @RequestMapping("/api/v1/messages")
 public class message_controller {
-
+    @Autowired
+    AuthService pAuthservervice;
    @Autowired
    chat_service chatService;
    @Autowired
    messages_service messagesServices;
-
+  @Autowired
+  service_finder_service Sfs;
+  @Autowired
+  service_provider_service SPs;
    chatroom newChatRoom;
 
-@PostMapping("{sender_id}/{recipient_id}")
- public chatroom send_message(@PathVariable UUID sender_id, @PathVariable UUID recipient_id, @RequestBody messages_model msg_mod) {
+   @PreAuthorize("hasAuthority('FINDER') or hasAuthority('PROVIDER')")
+   @PostMapping("/sendMessage/{recipient_id}")
+ public chatroom send_message(@PathVariable UUID recipient_id, @RequestPart(value = "msg_model", required = false) messages_model msg_mod, @RequestPart("image")MultipartFile hj) throws IOException {
    List<String> ids = new ArrayList<>();
-   ids.add(String.valueOf(sender_id));
+   Users chat_person=pAuthservervice.getActiveProfile();
+   ids.add(String.valueOf(chat_person.getId()));
    ids.add(String.valueOf(recipient_id));
    Collections.sort(ids);
    String chatId = ids.getFirst() + ids.getLast();
      //UUID CHatId= UUID.fromString(chatId);
-
+String recipient_name=find_person(recipient_id).getFirst_name();
 
 
    if (chatService.find_chat_by_id(chatId).isEmpty()) {
-
+       List<Users> ls=new ArrayList<>();
       newChatRoom = new chatroom();
       newChatRoom.setId(chatId);
+
+           ls.add(chat_person);
+           ls.add(find_person(recipient_id));
+
+           newChatRoom.setChat_person(ls);
+
+
+
+
       chatService.create_chat(newChatRoom);
 
       //newChatRoom.setChat_messages();
@@ -48,7 +68,7 @@ public class message_controller {
 //      newMessage.setText(msg_mod.getText());
 //      newMessage.setChat(newChatRoom);
 //      newMessage.setSender(sender_id);
-//      newMessage.setRecipient(recipient_id);
+//      newMessage.setRecipient(recipient_id);m
 //      newMessage.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
      // return newChatRoom;
    } else if (chatService.find_chat_by_id(chatId).isPresent()) {
@@ -56,19 +76,44 @@ public class message_controller {
 
 
    }
-    messages newMessage=new messages();
+   chatService.update_chat(newChatRoom,msg_mod.getText(),Timestamp.valueOf(LocalDateTime.now()),chat_person.getFirst_name(),recipient_name,chat_person.getId(),recipient_id);
+   messages newMessage=new messages();
    String m_id=UUID.randomUUID().toString();
    newMessage.setId(m_id);
    newMessage.setText(msg_mod.getText());
    newMessage.setChat(newChatRoom);
-   newMessage.setSender(sender_id);
+   newMessage.setSender(chat_person.getId());
    newMessage.setRecipient(recipient_id);
    newMessage.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-
+    newMessage.setChat_image(imageUtils.compressImage(hj.getBytes()));
    messagesServices.add_message(newMessage);
+
    return newChatRoom;
    //return chatId;
 }
 
+@GetMapping("/get_messages/{chat_id}")
+public ResponseEntity<?> getMessages(@PathVariable String chat_id) throws DataFormatException, IOException {
+    if (chatService.find_chat_by_id(chat_id).isEmpty()){
+        return ResponseEntity.ok("no such chat");
+    }else
+        return ResponseEntity.ok(chatService.get_chat_messages(chat_id));
+
+}
+
+
+    public Users find_person(UUID id_d){
+       if(Sfs.find_by_id(id_d).isPresent()){
+           return Sfs.find_by_id(id_d).orElse(null);
+
+       }else
+          return SPs.find_by_id(id_d).orElse(null);
+    }
+    @PreAuthorize("hasAuthority('FINDER') or hasAuthority('PROVIDER')")
+    @GetMapping("/get_person_messages")
+    public List<chatroom> get_person_Messages(){
+        Users my_person=pAuthservervice.getActiveProfile();
+        return my_person.getCHAts();
+    }
 
 }

@@ -1,11 +1,19 @@
 package com.shaul.saidikaV3.services;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
+import com.shaul.saidikaV3.emaildetails;
+import com.shaul.saidikaV3.entities.otp;
+import com.shaul.saidikaV3.entities.service_provider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,14 +32,16 @@ import com.shaul.saidikaV3.requestModels.registerRequestModel;
 import com.shaul.saidikaV3.responsemodels.login_response;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class service_finder_service {
+
     @Autowired
     AuthService authService;
 
 
-   @Autowired
+    @Autowired
    @Qualifier("enf") 
    private saidika_findersAuthenticationManager authenticationManager;
 
@@ -63,7 +73,7 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
         service_finder serviceFinder = finderOptional.get();
 
         String authorization = authService.loginUser(serviceFinder.getId(), loginRequest.getEmail(), loginRequest.getPassword(), authenticationManager,AccountRoles.FINDER);
-        return ResponseEntity.ok(login_response.builder().message("Login Successful").Authorization(authorization).twoFactorEnabled(authService.get2FAEnabled(serviceFinder.getId(),AccountRoles.FINDER)).profile(serviceFinder.getId()).build());
+        return ResponseEntity.ok(login_response.builder().message("Login Successful").Authorization(authorization).twoFactorEnabled(authService.get2FAEnabled(serviceFinder.getId(),AccountRoles.FINDER)).profile_id(serviceFinder.getId()).profile_name(serviceFinder.getFirst_name()).build());
     }
 
 
@@ -76,12 +86,13 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
-    public ResponseEntity<String> registerFinder(registerRequestModel requestModel) {
+    public ResponseEntity<String> registerFinder(registerRequestModel requestModel,MultipartFile dpp) throws IOException {
+
         if(!requestModel.getPassword().equals(requestModel.getConfirmPassword()))
             throw  new PasswordsDontMatchException();
         Optional<service_finder> email_Exists = sfr.findByEmail(requestModel.getEmail());
         if(email_Exists.isPresent())
-            throw new EmailAlreadyRegisteredException();
+            throw new EmailAlreadyRegisteredException("Account with Email Already exists");
        
 
         service_finder new_Service_finder=new service_finder();
@@ -91,7 +102,7 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
         new_Service_finder.setEmail(requestModel.getEmail().toLowerCase().trim());
         new_Service_finder.setPassword(passwordEncoder.encode(requestModel.getPassword()));
         new_Service_finder.setRole(requestModel.getRole());
-
+        new_Service_finder.setProfile_Photo_Path(setProfilePhoto(dpp));
        sfr.save(new_Service_finder);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Registration Successful");
@@ -103,6 +114,36 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
         return ResponseEntity.ok(authService.logOut(httpServletRequest));
     }
 
+
+    public service_finder find_by_email(String em){
+        return sfr.findByEmail(em).orElse(null);
+    }
+
+
+    public String setProfilePhoto(MultipartFile dp) throws IOException {
+        //String filename=dp.getOriginalFilename();
+        String filename=authService.getActiveProfile().getEmail()+"_photo";
+        String folder_path="C:\\Users\\Administrator\\Desktop\\saidika backend\\saidika_backend\\src\\main\\java\\com\\shaul\\saidikaV3\\profileImages\\";
+        String photo_path=folder_path+filename;
+        dp.transferTo(new File(photo_path));
+        return photo_path;
+    }
+    public ResponseEntity<?> get_profilePhoto() throws IOException {
+   String file_path=authService.getActiveProfile().getProfile_Photo_Path();
+       byte[] pp = Files.readAllBytes(new File(file_path).toPath());
+       return ResponseEntity.status(200)
+               .contentType(MediaType.IMAGE_JPEG)
+               .contentType(MediaType.IMAGE_PNG)
+               .body(pp);
+    }
+
+    public String update_profilePhoto(MultipartFile dppp) throws IOException {
+        service_finder fd= find_by_id(authService.getActiveProfile().getId()).orElse(null);
+        fd.setProfile_Photo_Path(setProfilePhoto(dppp));
+
+        sfr.saveAndFlush(fd);
+        return "updated";
+    }
 
 
 

@@ -62,12 +62,14 @@ public class SecurityConfig {
                                    "/api/v1/finder/login**"
                                    ,"/api/v1/provider/login**"
                                    ,"/api/v1/provider/register**"
-                                    ,"/api/v1/finder/register**"
+                                    ,"/api/v1/finder/*"
                                      ,"/api/v1/provider/activeUser"
                                      ,"/api/v1/services/*"
                                      ,"/api/v1/finder/activeUser"
                                      ,"/api/v1/comments/*"
                                      ,"/active_User"
+                                     ,"/sendMail"
+                                     ,"/verify_otp"
                            ).permitAll()
                            //.requestMatchers("/api/v1/provider/activeUser","/api/v1/services/get_services_offered","/api/v1/services/add_new_service").hasAuthority("PROVIDER")
                            .requestMatchers("/api/v1/*").authenticated()

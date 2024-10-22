@@ -40,4 +40,6 @@ public class registerRequestModel {
 
      @NotEmpty
     private String confirmPassword;
+
+    private String location;
 }

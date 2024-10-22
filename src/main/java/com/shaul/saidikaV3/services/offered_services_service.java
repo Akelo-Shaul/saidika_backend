@@ -25,11 +25,13 @@ public class offered_services_service {
     private  AuthService authService;
 
     public ResponseEntity<add_service_reponse> add_service(offered_services_model os){
+        service_provider sp_guy=(service_provider) authService.getActiveProfile();
       offered_services osy=offered_services.builder()
                             .description(os.getDescription())
                             .name(os.getName())
-                            .availableLocation(os.getAvailable_location())
-                            .provider((service_provider) authService.getActiveProfile())
+                            .provider(sp_guy)
+                            .average_rating(1)
+                            .availableLocation(sp_guy.getAvailableLocation())
                             .build();
 
                             osr.saveAndFlush(osy);
@@ -54,7 +56,10 @@ public class offered_services_service {
     }
     
 
-
+public String update_all(List<offered_services> hj){
+        osr.saveAllAndFlush(hj);
+        return "success";
+}
 
 
 

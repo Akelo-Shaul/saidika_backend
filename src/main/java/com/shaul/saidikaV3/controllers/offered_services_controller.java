@@ -63,7 +63,7 @@ if(bindingResult.hasErrors())
   @PreAuthorize("hasAuthority('FINDER') or hasAuthority('PROVIDER')")
   @GetMapping("/filter_by_location/{location}")
   public ResponseEntity<List<offered_services>> filter_services(@PathVariable String location){
-  
+
       return oss.filter_services_by_location(location);
  }
 }

@@ -13,6 +13,5 @@ public class offered_services_model {
     @NotEmpty
     private String description;
      
-    @NotEmpty
-    private String available_location;
+
 }

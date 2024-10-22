@@ -15,6 +15,7 @@ public class login_response {
     private Boolean twoFactorEnabled;
     private String message;
     private String Authorization;
-    private UUID profile;
+    private UUID profile_id;
     private boolean first_time_login;
+    private String profile_name;
 }
