@@ -24,8 +24,7 @@ public class messages {
     private UUID sender;
     private UUID recipient;
     private Timestamp timestamp;
-    @Lob
-    private byte[] chat_image;
+    private String chat_image_Url;
     @ManyToOne
     @JsonProperty("cHat")
     private chatroom chat;

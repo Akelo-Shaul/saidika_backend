@@ -10,6 +10,8 @@ import java.util.zip.DataFormatException;
 import com.shaul.saidikaV3.entities.messages;
 import com.shaul.saidikaV3.utils.imageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -35,17 +37,14 @@ public class chat_service {
 
 public ResponseEntity<?> get_chat_messages(String id) throws DataFormatException, IOException {
         chatroom cHAtroom=crr.findById(id).orElse(null);
-List<messages> gh=mSs.getMEssages(cHAtroom);
 
-    for (messages md:gh){
-    if(md.getChat_image() == null){
-        imageUtils.decompressImage(md.getChat_image());
-    }
-    }
+//    HttpHeaders hd=new HttpHeaders();
+//    hd.setContentType(MediaType.IMAGE_PNG);
+//    hd.setContentType(MediaType.IMAGE_JPEG);
+//    ContentDisposition build= ContentDisposition.attachment().build();
+//    hd.setContentDisposition(build);
   return  ResponseEntity.status(200)
-          .contentType(MediaType.IMAGE_JPEG)
-          .contentType(MediaType.IMAGE_PNG)
-            .body(gh);
+            .body(mSs.getMEssages(cHAtroom));
 
 }
 public String update_chat(chatroom CHAtroom, String last_msg, Timestamp gj, String s_name, String r_name, UUID id1, UUID id2){

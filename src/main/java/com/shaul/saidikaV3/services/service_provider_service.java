@@ -112,7 +112,7 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
         new_service_provider.setEmail(requestModel.getEmail().toLowerCase().trim());
         new_service_provider.setPassword(passwordEncoder.encode(requestModel.getPassword()));
         new_service_provider.setRole(requestModel.getRole());
-        new_service_provider.setProfile_Photo_Path(setProfilePhoto(gh));
+        new_service_provider.setProfile_Photo_Path(setProfilePhoto(gh, requestModel.getEmail()));
        spr.save(new_service_provider);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Registration Successful");
@@ -173,9 +173,9 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
  public service_provider find_by_email(String em){
         return spr.findByEmail(em).orElse(null);
  }
-    public String setProfilePhoto(MultipartFile dp) throws IOException {
+    public String setProfilePhoto(MultipartFile dp,String email) throws IOException {
         //String filename=dp.getOriginalFilename();
-        String filename=authService.getActiveProfile().getEmail()+"_photo";
+        String filename=email+"_photo";
         String folder_path="C:\\Users\\Administrator\\Desktop\\saidika backend\\saidika_backend\\src\\main\\java\\com\\shaul\\saidikaV3\\profileImages\\";
         String photo_path=folder_path+filename;
         dp.transferTo(new File(photo_path));
@@ -191,7 +191,7 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
     }
     public String update_profilePhoto(MultipartFile dppp) throws IOException {
         service_provider fd= find_by_id(authService.getActiveProfile().getId()).orElse(null);
-        fd.setProfile_Photo_Path(setProfilePhoto(dppp));
+        fd.setProfile_Photo_Path(setProfilePhoto(dppp,fd.getEmail()));
 
         spr.saveAndFlush(fd);
         return "updated";
