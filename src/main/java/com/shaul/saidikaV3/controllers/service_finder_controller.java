@@ -2,6 +2,8 @@ package com.shaul.saidikaV3.controllers;
 
 
 import com.shaul.saidikaV3.entities.service_finder;
+import com.shaul.saidikaV3.exceptions.EmailAlreadyRegisteredException;
+import com.shaul.saidikaV3.exceptions.errorResponse;
 import com.shaul.saidikaV3.requestModels.loginRequestmodel;
 import com.shaul.saidikaV3.requestModels.registerRequestModel;
 import com.shaul.saidikaV3.responsemodels.login_response;
@@ -18,7 +20,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RequestMapping("/api/v1/finder")
@@ -37,7 +41,7 @@ public class service_finder_controller {
             return finder_service.login(loginRequest);
     }
 
-    @PreAuthorize("hasAuthority('SERVICE_FINDER')")
+    @PreAuthorize("hasAuthority('FINDER')")
     @GetMapping("/activeUser")
     public ResponseEntity<service_finder> activeUser()
     {
@@ -46,16 +50,15 @@ public class service_finder_controller {
 
 
     @PostMapping("/register")
-    public ResponseEntity<String> addFinder(@RequestBody  @Valid registerRequestModel finder_request_model,BindingResult bindingResult){
+    public ResponseEntity<String> addFinder(@RequestPart("reg_model")  @Valid registerRequestModel finder_request_model,BindingResult bindingResult,@RequestPart("profile_photo") MultipartFile dp) throws IOException {
       if(bindingResult.hasErrors())
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(GeneralUtils.createErrorMessage(bindingResult));
         else
-   
 
-      return  finder_service.registerFinder(finder_request_model);
+            return  finder_service.registerFinder(finder_request_model,dp);
     }
 
-    @GetMapping() //TODO remove this nonsense
+    @GetMapping() 
     public List<service_finder> get_all_finders(){
      return finder_service.get_all();
     }
@@ -64,5 +67,21 @@ public class service_finder_controller {
     {
         return finder_service.logOut(httpServletRequest);
     }
+    @ExceptionHandler(value = EmailAlreadyRegisteredException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public errorResponse handleEmailAlreadyRegisteredException(EmailAlreadyRegisteredException ex) {
+        return new errorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
+    }
+
+
+
+    @PostMapping("/updateProfilePhoto")
+    public String updatePhoto(@RequestPart("image")MultipartFile profile_pic) throws IOException {
+     return finder_service.update_profilePhoto(profile_pic);
+    }
+   @GetMapping("/getpp")
+    public ResponseEntity<?> getpp() throws IOException {
+        return finder_service.get_profilePhoto();
+   }
 
 }

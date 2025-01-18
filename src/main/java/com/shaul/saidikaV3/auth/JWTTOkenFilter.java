@@ -3,13 +3,9 @@ package com.shaul.saidikaV3.auth;
 
 
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -17,8 +13,17 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.shaul.saidikaV3.configs.SecurityConfig;
 
-import java.io.IOException;
-import java.util.Date;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SecurityException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class JWTTOkenFilter extends OncePerRequestFilter {
@@ -30,6 +35,7 @@ public class JWTTOkenFilter extends OncePerRequestFilter {
 
 
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authorization=request.getHeader("Authorization");
@@ -47,7 +53,7 @@ public class JWTTOkenFilter extends OncePerRequestFilter {
                         authService.authorizeRequest(tokenString, request, profilename);
                     }
                 }
-            }catch (Exception es)
+            }catch (ExpiredJwtException | MalformedJwtException | UnsupportedJwtException | SecurityException | IllegalArgumentException es)
             {
 
             }

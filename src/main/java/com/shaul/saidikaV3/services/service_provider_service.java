@@ -1,5 +1,21 @@
 package com.shaul.saidikaV3.services;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import com.shaul.saidikaV3.entities.offered_services;
+import com.shaul.saidikaV3.requestModels.updateProfile;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.shaul.saidikaV3.auth.AuthService;
 import com.shaul.saidikaV3.auth.Authorities.AccountRoles;
 import com.shaul.saidikaV3.configs.AuthenticationManagers.saidika_provider_AuthenticationManager;
@@ -14,16 +30,9 @@ import com.shaul.saidikaV3.requestModels.registerRequestModel;
 import com.shaul.saidikaV3.responsemodels.login_response;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.multipart.MultipartFile;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class service_provider_service {
@@ -33,12 +42,15 @@ public class service_provider_service {
 
     @Autowired
     service_provider_repo spr;
-
-    service_provider sp=new service_provider();
+@Autowired
+offered_services_service ghj;
+    
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+   
+   
     @Autowired
     private saidika_provider_AuthenticationManager authenticationManager;
 
@@ -56,14 +68,19 @@ public class service_provider_service {
     }
 public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
 
-        Optional<service_provider> finderOptional = spr.findByEmail(loginRequest.getEmail());
-        if(finderOptional.isEmpty())
+        Optional<service_provider> provOptional = spr.findByEmail(loginRequest.getEmail());
+        if(provOptional.isEmpty())
             throw new EmailNotFoundException();
 
-        service_provider serviceFinder = finderOptional.get();
-
-        String authorization = authService.loginUser(serviceFinder.getId(), loginRequest.getEmail(), loginRequest.getPassword(), authenticationManager,AccountRoles.SERVICE_PROVIDER);
-        return ResponseEntity.ok(login_response.builder().message("Login Successful").Authorization(authorization).twoFactorEnabled(authService.get2FAEnabled(serviceFinder.getId(),AccountRoles.SERVICE_FINDER)).build());
+        service_provider serviceProvider = provOptional.get();
+        String authorization = authService.loginUser(serviceProvider.getId(), loginRequest.getEmail(), loginRequest.getPassword(), authenticationManager,AccountRoles.PROVIDER);
+           if(serviceProvider.getOfferedServices().isEmpty()){
+       
+          return ResponseEntity.ok(login_response.builder().message("Login Successful").Authorization(authorization).first_time_login(true).profile_id(serviceProvider.getId()).profile_name(serviceProvider.getFirst_name()).build());}
+        else 
+           
+         return ResponseEntity.ok(login_response.builder().message("Login Successful").Authorization(authorization).first_time_login(false).profile_id(serviceProvider.getId()).profile_name(serviceProvider.getFirst_name()).build());
+        
     }
 
 
@@ -76,22 +93,24 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
-    public ResponseEntity<String> registerProvider(registerRequestModel requestModel) {
+    public ResponseEntity<String> registerProvider(registerRequestModel requestModel,MultipartFile gh) throws IOException {
+
         if(!requestModel.getPassword().equals(requestModel.getConfirmPassword()))
             throw  new PasswordsDontMatchException();
         Optional<service_provider> email_Exists = spr.findByEmail(requestModel.getEmail());
         if(email_Exists.isPresent())
-            throw new EmailAlreadyRegisteredException();
+            throw new EmailAlreadyRegisteredException("Account with Email Already exists");
        
 
         service_provider new_service_provider=new service_provider();
         new_service_provider.setFirst_name(requestModel.getFirst_name());
         new_service_provider.setLast_name(requestModel.getLast_name());
         new_service_provider.setPhone(requestModel.getPhone());
+        new_service_provider.setAvailableLocation(requestModel.getLocation());
         new_service_provider.setEmail(requestModel.getEmail().toLowerCase().trim());
         new_service_provider.setPassword(passwordEncoder.encode(requestModel.getPassword()));
         new_service_provider.setRole(requestModel.getRole());
-
+        new_service_provider.setProfile_Photo_Path(setProfilePhoto(gh, requestModel.getEmail()));
        spr.save(new_service_provider);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Registration Successful");
@@ -103,5 +122,77 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
         return ResponseEntity.ok(authService.logOut(httpServletRequest));
     }
 
+ public ResponseEntity<String> update_profile(updateProfile update){
+    service_provider  provider_update=spr.findById(authService.getActiveProfile().getId()).orElse(null);
 
+
+    if(update.getPassword()==null && update.getPhone_number()!=null && update.getLocation()==null){
+       provider_update.setPhone(update.getPhone_number());
+       spr.saveAndFlush(provider_update);
+   } else if (update.getPassword()!=null && update.getPhone_number()==null && update.getLocation()==null) {
+       provider_update.setPassword(passwordEncoder.encode(update.getPassword()));
+       spr.saveAndFlush(provider_update);
+   }else if(update.getPassword()!=null && update.getPhone_number()!=null && update.getLocation()!=null){
+          provider_update.setPhone(update.getPhone_number());
+          provider_update.setPassword(passwordEncoder.encode(update.getPassword()));
+          provider_update.setAvailableLocation(update.getLocation());
+        List<offered_services> los= provider_update.getOfferedServices();
+        los.forEach((os -> os.setAvailableLocation(update.getLocation())));
+        spr.saveAndFlush(provider_update);
+         ghj.update_all(los);
+    } else if (update.getPassword()==null && update.getPhone_number()==null && update.getLocation()!=null) {
+       provider_update.setAvailableLocation(update.getLocation());
+        List<offered_services> los= provider_update.getOfferedServices();
+        los.forEach((os -> os.setAvailableLocation(update.getLocation())));
+        spr.saveAndFlush(provider_update);
+        ghj.update_all(los);
+   } else if (update.getPassword()!=null && update.getPhone_number()!=null && update.getLocation()==null) {
+        provider_update.setPhone(update.getPhone_number());
+        provider_update.setPassword(passwordEncoder.encode(update.getPassword()));
+        spr.saveAndFlush(provider_update);
+    } else if (update.getPassword()!=null && update.getPhone_number()==null && update.getLocation()!=null) {
+        provider_update.setAvailableLocation(update.getLocation());
+        List<offered_services> los= provider_update.getOfferedServices();
+        los.forEach((os -> os.setAvailableLocation(update.getLocation())));
+        provider_update.setPassword(passwordEncoder.encode(update.getPassword()));
+        spr.saveAndFlush(provider_update);
+        ghj.update_all(los);
+    }else if(update.getPassword()==null && update.getPhone_number()!=null && update.getLocation()!=null){
+        provider_update.setPhone(update.getPhone_number());
+        provider_update.setAvailableLocation(update.getLocation());
+        List<offered_services> los= provider_update.getOfferedServices();
+        los.forEach((os -> os.setAvailableLocation(update.getLocation())));
+        spr.saveAndFlush(provider_update);
+        ghj.update_all(los);
+    }
+     return ResponseEntity.status(HttpStatus.OK).body("update successful");
+ }
+
+ public service_provider find_by_email(String em){
+        return spr.findByEmail(em).orElse(null);
+ }
+    public String setProfilePhoto(MultipartFile dp,String email) throws IOException {
+        //String filename=dp.getOriginalFilename();
+        String filename=email+"_photo";
+         
+       String folder_path="C:\\Users\\Administrator\\Desktop\\saidika backend\\saidika_backend\\src\\main\\java\\com\\shaul\\saidikaV3\\profileImages\\";
+        String photo_path=folder_path+filename;
+        dp.transferTo(new File(photo_path));
+        return photo_path;
+    }
+    public ResponseEntity<?> get_profilePhoto() throws IOException {
+        String file_path=authService.getActiveProfile().getProfile_Photo_Path();
+        byte[] pp = Files.readAllBytes(new File(file_path).toPath());
+        return ResponseEntity.status(200)
+                .contentType(MediaType.IMAGE_JPEG)
+                .contentType(MediaType.IMAGE_PNG)
+                .body(pp);
+    }
+    public String update_profilePhoto(MultipartFile dppp) throws IOException {
+        service_provider fd= find_by_id(authService.getActiveProfile().getId()).orElse(null);
+        fd.setProfile_Photo_Path(setProfilePhoto(dppp,fd.getEmail()));
+
+        spr.saveAndFlush(fd);
+        return "updated";
+    }
 }

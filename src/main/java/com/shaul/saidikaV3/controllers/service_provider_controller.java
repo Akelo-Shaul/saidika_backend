@@ -1,6 +1,18 @@
 package com.shaul.saidikaV3.controllers;
 
-import com.shaul.saidikaV3.entities.service_finder;
+import java.io.IOException;
+import java.util.List;
+
+import com.shaul.saidikaV3.exceptions.EmailAlreadyRegisteredException;
+import com.shaul.saidikaV3.exceptions.errorResponse;
+import com.shaul.saidikaV3.requestModels.updateProfile;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
 import com.shaul.saidikaV3.entities.service_provider;
 import com.shaul.saidikaV3.requestModels.loginRequestmodel;
 import com.shaul.saidikaV3.requestModels.registerRequestModel;
@@ -9,15 +21,7 @@ import com.shaul.saidikaV3.services.service_provider_service;
 import com.shaul.saidikaV3.utils.GeneralUtils;
 
 import jakarta.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequestMapping("/api/v1/provider")
 @RestController
@@ -27,21 +31,19 @@ public class service_provider_controller {
 
 
     @PostMapping("/register")
-    public ResponseEntity<String> add_provider(@RequestBody  @Valid registerRequestModel provider_request_model,BindingResult bindingResult){
+    public ResponseEntity<String> add_provider(@RequestPart("reg_model")  @Valid registerRequestModel provider_request_model, BindingResult bindingResult, @RequestPart("profile_pic")MultipartFile fg) throws IOException {
       if(bindingResult.hasErrors())
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(GeneralUtils.createErrorMessage(bindingResult));
         else
-   
-
-      return  provider_service.registerProvider(provider_request_model);
+            return  provider_service.registerProvider(provider_request_model,fg);
     }
 
-    @GetMapping() //TODO remove this nonsense
+    @GetMapping() 
     public List<service_provider> get_allProviders(){
         return provider_service.get_all_providers();
     }
 
-   @PreAuthorize("hasAuthority('SERVICE_PROVIDER')")
+    @PreAuthorize("hasAuthority('PROVIDER')")
     @GetMapping("/activeUser")
     public ResponseEntity<service_provider> activeUser()
     {
@@ -56,6 +58,23 @@ public class service_provider_controller {
         else
             return provider_service.login(loginRequest);
     }
+    @PreAuthorize("hasAuthority('PROVIDER')")
+    @PostMapping("/update_profile")
+    public ResponseEntity<String> profile_update(@RequestBody updateProfile up){
+        return provider_service.update_profile(up);
 
-
+    }
+    @ExceptionHandler(value = EmailAlreadyRegisteredException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public errorResponse handleEmailAlreadyRegisteredException(EmailAlreadyRegisteredException ex) {
+        return new errorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
+    }
+    @PostMapping("/updateProfilePhoto")
+    public String updatePhoto(@RequestPart("image")MultipartFile profile_pic) throws IOException {
+        return provider_service.update_profilePhoto(profile_pic);
+    }
+    @GetMapping("/getpp")
+    public ResponseEntity<?> getpp() throws IOException {
+        return provider_service.get_profilePhoto();
+    }
 }

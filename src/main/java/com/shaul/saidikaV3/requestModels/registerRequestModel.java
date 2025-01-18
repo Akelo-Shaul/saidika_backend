@@ -1,7 +1,7 @@
 package com.shaul.saidikaV3.requestModels;
 
 
-import jakarta.annotation.Nonnull;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -40,4 +40,6 @@ public class registerRequestModel {
 
      @NotEmpty
     private String confirmPassword;
+
+    private String location;
 }

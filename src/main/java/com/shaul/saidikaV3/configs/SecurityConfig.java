@@ -1,6 +1,8 @@
 package com.shaul.saidikaV3.configs;
 
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,14 +28,12 @@ import com.shaul.saidikaV3.auth.saidika_providers_UserDetails.provider_DetailsSe
 import com.shaul.saidikaV3.configs.AuthenticationManagers.saidika_findersAuthenticationManager;
 import com.shaul.saidikaV3.configs.AuthenticationManagers.saidika_provider_AuthenticationManager;
 
-import java.util.List;
-
 @EnableWebSecurity
 @EnableMethodSecurity
 @Configuration
 public class SecurityConfig {
 
-    public static String jwtSecretKey="saidikasaidikasaidikasaidika";
+    public static String jwtSecretKey="saidikasaidikasaidikasaidikasaidikasaidikasaidikasaidikasaidikasaidikasaidika";
 
     @Autowired
     private JWTTOkenFilter jwtTokenFilter;
@@ -62,12 +62,12 @@ public class SecurityConfig {
                                    ,"/api/v1/provider/login"
                                    ,"/api/v1/provider/register"
                                     ,"/api/v1/finder/register"
-                                   
+                                     ,"/verify_otp"
+                                     ,"/send_otp"
                            ).permitAll()
-                           .requestMatchers("/api/v1/provider/activeuser","/api/v1/services/*").hasAuthority("SERVICE_PROVIDER")
-                           .requestMatchers("/api/v1/finder/activeuser").hasAuthority("SERVICE_FINDER")
-                           .requestMatchers("/api/v1/**").authenticated()
-                           .anyRequest().permitAll();
+                           //.requestMatchers("/api/v1/provider/activeUser","/api/v1/services/get_services_offered","/api/v1/services/add_new_service").hasAuthority("PROVIDER")
+                           //    .requestMatchers("/api/v1/*").authenticated()
+                           .anyRequest().authenticated();
                }).sessionManagement(httpSecuritySessionManagementConfigurer -> {
                    httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                });
@@ -99,30 +99,29 @@ public class SecurityConfig {
 
 
     
-
-    @Bean(name = "provider_authprovider")
     @Primary
+    @Bean()
     public AuthenticationProvider providerAuthenticationProvider(){
-        DaoAuthenticationProvider authenticationProvider=new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(provider_detailsService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
-        return authenticationProvider;
+        DaoAuthenticationProvider pauthenticationProvider=new DaoAuthenticationProvider();
+        pauthenticationProvider.setUserDetailsService(provider_detailsService);
+        pauthenticationProvider.setPasswordEncoder(passwordEncoder());
+        return pauthenticationProvider;
     }
 
 
 
 
 
-    @Primary
-    @Bean
+  
+    @Bean(name ="enf")
     public saidika_findersAuthenticationManager finders_AuthenticationManager(AuthenticationConfiguration authenticationConfiguration)
             throws Exception {
         return new saidika_findersAuthenticationManager(finderAuthenticationProvider());
     }
 
-
-    @Bean
-    public saidika_provider_AuthenticationManager adminsAuthenticationManager(AuthenticationConfiguration authenticationConfiguration)
+    @Primary
+    @Bean(name="prov")
+    public saidika_provider_AuthenticationManager providers_AuthenticationManager(AuthenticationConfiguration authenticationConfiguration)
             throws Exception {
         return new saidika_provider_AuthenticationManager(providerAuthenticationProvider());
     }

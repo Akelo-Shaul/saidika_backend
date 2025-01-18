@@ -7,6 +7,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
 @Component
+
 public class saidika_provider_AuthenticationManager implements AuthenticationManager {
      private final AuthenticationProvider authenticationProvider;
 

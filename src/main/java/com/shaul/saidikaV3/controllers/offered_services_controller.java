@@ -32,7 +32,7 @@ public class offered_services_controller {
     service_provider_service sps;
     
 
-    @PreAuthorize("hasAuthority('SERVICE_PROVIDER')")
+    @PreAuthorize("hasAuthority('PROVIDER')")
     @PostMapping("/add_new_service")
     public ResponseEntity<add_service_reponse> add_new_service( @RequestBody @Valid offered_services_model osm,BindingResult bindingResult){
 if(bindingResult.hasErrors())
@@ -48,18 +48,22 @@ if(bindingResult.hasErrors())
 
     }
 
-    @PreAuthorize("hasAuthority('SERVICE_PROVIDER')")
+    @PreAuthorize("hasAuthority('PROVIDER')")
     @GetMapping("/get_services_offered")
     public ResponseEntity<List<offered_services>> getServicesOffered (){
-    //   service_provider serviceProvider= provider_service.find_by_id(id).orElse(null);
-    //    if (serviceProvider.getOfferedServices().isEmpty()) {
-    //        return new ResponseEntity<>("No services", HttpStatus.NOT_FOUND);
-
-    //    }else{
-    //        return  ResponseEntity.ok(serviceProvider.getOfferedServices());
-    //    }
+    
         return oss.my_services();
    }
+   @PreAuthorize("hasAuthority('FINDER') or hasAuthority('PROVIDER')")
+   @GetMapping("/get_all_services_offered")
+   public ResponseEntity<List<offered_services>> get_all_ServicesOffered (){
+   
+       return oss.all_services();
+  }
+  @PreAuthorize("hasAuthority('FINDER') or hasAuthority('PROVIDER')")
+  @GetMapping("/filter_by_location/{location}")
+  public ResponseEntity<List<offered_services>> filter_services(@PathVariable String location){
 
-
+      return oss.filter_services_by_location(location);
+ }
 }

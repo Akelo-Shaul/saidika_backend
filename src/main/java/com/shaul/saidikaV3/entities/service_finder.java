@@ -1,6 +1,7 @@
 package com.shaul.saidikaV3.entities;
 
 import jakarta.persistence.Entity;
+
 import lombok.*;
 
 
@@ -9,5 +10,7 @@ import lombok.*;
 @Setter
 
 public class service_finder extends Users{
+
+
 
 }

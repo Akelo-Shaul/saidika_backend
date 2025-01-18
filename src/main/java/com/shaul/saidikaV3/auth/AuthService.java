@@ -5,6 +5,24 @@ package com.shaul.saidikaV3.auth;
 
 
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Service;
+
 import com.shaul.saidikaV3.auth.AuthToken.AuthorizationToken;
 import com.shaul.saidikaV3.auth.AuthToken.TokenRepository;
 import com.shaul.saidikaV3.auth.Authorities.AccountAuthority;
@@ -21,18 +39,6 @@ import com.shaul.saidikaV3.repositories.service_provider_repo;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Service;
-
-import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class AuthService {
@@ -67,16 +73,18 @@ public class AuthService {
             AuthorizationToken token=tmpToken.get();
             if (token.isUsable()) {
 
-                //check for 2FA
-                if(check2FA(token)) {
-                    if (!request.getRequestURL().toString().endsWith("/checkProfile")) {
+               
+               //if(check2FA(token)) {
+                   if (!request.getRequestURL().toString().endsWith("/checkProfile")) {
                         token.setLastAccess(new Date().getTime());
                         tokenRepository.save(token);
-                    }
+                   }
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = getUsernamePasswordAuthenticationToken(username, token);
                     usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                }
+                //}
+            
+            
             }
         }
     }
@@ -84,7 +92,7 @@ public class AuthService {
     private UsernamePasswordAuthenticationToken getUsernamePasswordAuthenticationToken(String username, AuthorizationToken token) {
         UserDetailsService detailsService;
 
-        if(token.getAccountRole()==AccountRoles.SERVICE_FINDER)
+        if(token.getAccountRole()==AccountRoles.FINDER)
             detailsService = Finder_DetailsService;
         else 
             detailsService = providerDetailsService;
@@ -96,36 +104,38 @@ public class AuthService {
         return usernamePasswordAuthenticationToken;
     }
 
-    private boolean check2FA(AuthorizationToken token) {
-        if(get2FAEnabled(token.getProfileId(),token.getAccountRole()))
-        {
-            return (token.getAuthenticated()!=null&&token.getAuthenticated());
+    // private boolean check2FA(AuthorizationToken token) {
+    //     if(get2FAEnabled(token.getProfileid(),token.getAccountRole()))
+    //     {
+    //         return (token.getAuthenticated()!=null&&token.getAuthenticated());
 
-        }else
-            return true;
-    }
+    //     }else
+    //         return true;
+    // }
 
-    public Boolean get2FAEnabled(UUID profileId, AccountRoles accountRole)
-    {
-//        Optional<TwoFactor> optionalTwoFactor=twoFactorRepository.findByUserUidAndAccountRole(profileId,accountRole);
+//     public Boolean get2FAEnabled(UUID profileId, AccountRoles accountRole)
+//     {
+//         Optional<TwoFactor> optionalTwoFactor=twoFactorRepository.findByUserUidAndAccountRole(profileId,accountRole);
 //        return optionalTwoFactor.isPresent()&&optionalTwoFactor.get().getIsVerified();
-        return false;
-    }
+//         return false;
+//     }
 
+    @SuppressWarnings("unchecked")
     public Users getActiveProfile()
     {
 //        SecurityContextHolder.getContext().getAuthentication().getAuthorities().eq
         String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-//        Optional<Person> optionalPerson;
+        //        Optional<Person> optionalPerson;
         Collection<GrantedAuthority> authorities= (Collection<GrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+        System.out.println("authorities" + authorities);
 
-        if(authorities.contains(new AccountAuthority(AccountRoles.SERVICE_FINDER.name()))) {
+        if(authorities.contains(new AccountAuthority(AccountRoles.FINDER.name()))) {
             Optional<service_finder> optionalPerson = frRepository.findByEmail(username);
             if(optionalPerson.isPresent())
                 return optionalPerson.get();
         }
        
-        else if(authorities.contains(new AccountAuthority(AccountRoles.SERVICE_PROVIDER.name()))){
+        else if(authorities.contains(new AccountAuthority(AccountRoles.PROVIDER.name()))){
             Optional<service_provider> optionalPerson = prRepository.findByEmail(username);
             if(optionalPerson.isPresent())
                 return optionalPerson.get();
@@ -135,6 +145,7 @@ public class AuthService {
     }
 
 
+    @SuppressWarnings("deprecation")
     public String loginUser(UUID uid,String username, String password,AuthenticationManager authenticationManager,AccountRoles accountRole) {
 //        System.out.println("Loggin in "+num+" - "+password);
         authenticationManager.authenticate(
@@ -154,7 +165,8 @@ public class AuthService {
                 .inActiveTime(TimeUnit.MINUTES.toMillis(10))
                 .value(token)
                 .accountRole(accountRole)
-                .profileId(uid)
+                .profileid(uid)
+                .authenticated(true)
                 .build();
 
         tokenRepository.saveAndFlush(authorizationTokens);
@@ -189,7 +201,7 @@ public class AuthService {
 
     public String logOutAllDevices()
     {
-            List<AuthorizationToken> allActiveProfileTokens = tokenRepository.findByProfileId(getActiveProfile().getId());
+            List<AuthorizationToken> allActiveProfileTokens = tokenRepository.findByProfileid(getActiveProfile().getId());
             for(AuthorizationToken authorizationTokens:allActiveProfileTokens) {
                 //perform the logout action
                 authorizationTokens.setLoggedOut(true);
