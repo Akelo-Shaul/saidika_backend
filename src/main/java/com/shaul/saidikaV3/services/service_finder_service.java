@@ -88,24 +88,32 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
 
     public ResponseEntity<String> registerFinder(registerRequestModel requestModel,MultipartFile dpp) throws IOException {
 
-        if(!requestModel.getPassword().equals(requestModel.getConfirmPassword()))
-            throw  new PasswordsDontMatchException();
-        Optional<service_finder> email_Exists = sfr.findByEmail(requestModel.getEmail());
-        if(email_Exists.isPresent())
-            throw new EmailAlreadyRegisteredException("Account with Email Already exists");
-       
 
-        service_finder new_Service_finder=new service_finder();
+        Optional<service_finder> email_Exists = sfr.findByEmail(requestModel.getEmail());
+        if (email_Exists.isPresent())
+            throw new EmailAlreadyRegisteredException("Account with Email Already exists");
+
+
+        service_finder new_Service_finder = new service_finder();
         new_Service_finder.setFirst_name(requestModel.getFirst_name());
         new_Service_finder.setLast_name(requestModel.getLast_name());
         new_Service_finder.setPhone(requestModel.getPhone());
         new_Service_finder.setEmail(requestModel.getEmail().toLowerCase().trim());
         new_Service_finder.setPassword(passwordEncoder.encode(requestModel.getPassword()));
         new_Service_finder.setRole(requestModel.getRole());
-        new_Service_finder.setProfile_Photo_Path(setProfilePhoto(dpp,requestModel.getEmail()));
-       sfr.save(new_Service_finder);
+        if (dpp != null){
+            new_Service_finder.setProfile_Photo_Path(setProfilePhoto(dpp, requestModel.getEmail()));
+            sfr.save(new_Service_finder);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Registration Successful");
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Registration Successful");
+        }else{
+            sfr.save(new_Service_finder);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Registration Successful");
+        }
+
+
+
+
     }
 
     public ResponseEntity<String> logOut(HttpServletRequest httpServletRequest) {

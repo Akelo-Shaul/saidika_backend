@@ -31,11 +31,17 @@ public class service_provider_controller {
 
 
     @PostMapping("/register")
-    public ResponseEntity<String> add_provider(@RequestPart("reg_model")  @Valid registerRequestModel provider_request_model, BindingResult bindingResult, @RequestPart("profile_pic")MultipartFile fg) throws IOException {
-      if(bindingResult.hasErrors())
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(GeneralUtils.createErrorMessage(bindingResult));
-        else
-            return  provider_service.registerProvider(provider_request_model,fg);
+    public ResponseEntity<String> add_provider(@RequestPart("first_name") String fn,@RequestPart("last_name") String ln,@RequestPart("email")  String eml,@RequestPart("phone") String pn,@RequestPart("password") String pass,@RequestPart("location") String loc,@RequestPart("role") String rol, @RequestPart(value = "profile_pic",required = false)MultipartFile fg) throws IOException {
+        registerRequestModel provider_request_model= new registerRequestModel().builder()
+                .last_name(ln)
+                .first_name(fn)
+                .email(eml)
+                .role(rol)
+                .phone(pn)
+                .location(loc)
+                .password(pass)
+                .build();
+        return  provider_service.registerProvider(provider_request_model,fg);
     }
 
     @GetMapping() 

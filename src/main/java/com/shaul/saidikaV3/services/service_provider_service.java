@@ -11,6 +11,7 @@ import java.util.UUID;
 import com.shaul.saidikaV3.entities.offered_services;
 import com.shaul.saidikaV3.entities.service_finder;
 import com.shaul.saidikaV3.requestModels.updateProfile;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -95,10 +96,9 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
-    public ResponseEntity<String> registerProvider(registerRequestModel requestModel,MultipartFile gh) throws IOException {
+    public ResponseEntity<String> registerProvider(registerRequestModel requestModel, MultipartFile gh) throws IOException {
 
-        if(!requestModel.getPassword().equals(requestModel.getConfirmPassword()))
-            throw  new PasswordsDontMatchException();
+
         Optional<service_provider> email_Exists = spr.findByEmail(requestModel.getEmail());
         if(email_Exists.isPresent())
             throw new EmailAlreadyRegisteredException("Account with Email Already exists");
@@ -112,10 +112,18 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
         new_service_provider.setEmail(requestModel.getEmail().toLowerCase().trim());
         new_service_provider.setPassword(passwordEncoder.encode(requestModel.getPassword()));
         new_service_provider.setRole(requestModel.getRole());
-        new_service_provider.setProfile_Photo_Path(setProfilePhoto(gh, requestModel.getEmail()));
-       spr.save(new_service_provider);
+        if(gh != null){
+            new_service_provider.setProfile_Photo_Path(setProfilePhoto(gh, requestModel.getEmail()));
+            spr.save(new_service_provider);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Registration Successful");
+        }else{
+            spr.save(new_service_provider);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Registration Successful");
+        }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Registration Successful");
+
+
+
     }
 
     public ResponseEntity<String> logOut(HttpServletRequest httpServletRequest) {

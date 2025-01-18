@@ -6,12 +6,14 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class registerRequestModel {
      @NotEmpty
     private String first_name;
@@ -38,8 +40,6 @@ public class registerRequestModel {
     @Size(min = 3,message = "password must be greater than 3 characters",max=10)
     private String password;
 
-     @NotEmpty
-    private String confirmPassword;
 
     private String location;
 }

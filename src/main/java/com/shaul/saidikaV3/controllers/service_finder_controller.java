@@ -51,10 +51,16 @@ public class service_finder_controller {
 
 
     @PostMapping("/register")
-    public ResponseEntity<String> addFinder(@RequestPart("reg_model")  @Valid registerRequestModel finder_request_model,BindingResult bindingResult,@RequestPart("profile_photo") MultipartFile dp) throws IOException {
-      if(bindingResult.hasErrors())
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(GeneralUtils.createErrorMessage(bindingResult));
-        else
+    public ResponseEntity<String> addFinder(@RequestPart("first_name") String fn,@RequestPart("last_name") String ln,@RequestPart("email")  String eml,@RequestPart("phone") String pn,@RequestPart("password") String pass,@RequestPart("location") String loc,@RequestPart("role") String rol, @RequestPart(value = "profile_pic",required = false)MultipartFile dp) throws IOException {
+        registerRequestModel finder_request_model= new registerRequestModel().builder()
+                .last_name(ln)
+                .first_name(fn)
+                .email(eml)
+                .role(rol)
+                .phone(pn)
+                .location(loc)
+                .password(pass)
+                .build();
 
             return  finder_service.registerFinder(finder_request_model,dp);
     }
@@ -77,7 +83,7 @@ public class service_finder_controller {
 
 
     @PostMapping("/updateProfilePhoto")
-    public String updatePhoto(@RequestPart("image")MultipartFile profile_pic) throws IOException {
+    public String updatePhoto(@RequestPart(value = "image")MultipartFile profile_pic) throws IOException {
      return finder_service.update_profilePhoto(profile_pic);
     }
    @GetMapping("/getpp")
