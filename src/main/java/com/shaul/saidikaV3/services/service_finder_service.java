@@ -4,12 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.UUID;
 
-import com.shaul.saidikaV3.emaildetails;
-import com.shaul.saidikaV3.entities.otp;
-import com.shaul.saidikaV3.entities.service_provider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -73,7 +69,7 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
         service_finder serviceFinder = finderOptional.get();
 
         String authorization = authService.loginUser(serviceFinder.getId(), loginRequest.getEmail(), loginRequest.getPassword(), authenticationManager,AccountRoles.FINDER);
-        return ResponseEntity.ok(login_response.builder().message("Login Successful").Authorization(authorization).twoFactorEnabled(authService.get2FAEnabled(serviceFinder.getId(),AccountRoles.FINDER)).profile_id(serviceFinder.getId()).profile_name(serviceFinder.getFirst_name()).build());
+        return ResponseEntity.ok(login_response.builder().message("Login Successful").Authorization(authorization).profile_id(serviceFinder.getId()).profile_name(serviceFinder.getFirst_name()).build());
     }
 
 

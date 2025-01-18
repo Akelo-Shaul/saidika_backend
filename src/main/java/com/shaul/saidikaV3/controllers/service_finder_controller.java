@@ -10,7 +10,6 @@ import com.shaul.saidikaV3.responsemodels.login_response;
 import com.shaul.saidikaV3.services.service_finder_service;
 import com.shaul.saidikaV3.utils.GeneralUtils;
 
-import jakarta.mail.Multipart;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 

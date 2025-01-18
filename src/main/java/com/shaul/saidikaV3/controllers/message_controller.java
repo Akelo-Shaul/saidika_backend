@@ -7,7 +7,6 @@ import com.shaul.saidikaV3.services.chat_service;
 import com.shaul.saidikaV3.services.messages_service;
 import com.shaul.saidikaV3.services.service_finder_service;
 import com.shaul.saidikaV3.services.service_provider_service;
-import com.shaul.saidikaV3.utils.imageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

@@ -5,7 +5,6 @@ import com.shaul.saidikaV3.emaildetails;
 import com.shaul.saidikaV3.entities.otp;
 import com.shaul.saidikaV3.exceptions.EmailAlreadyRegisteredException;
 import com.shaul.saidikaV3.exceptions.errorResponse;
-import com.shaul.saidikaV3.responsemodels.otpResponse;
 import com.shaul.saidikaV3.services.email_service;
 import com.shaul.saidikaV3.services.otpservice;
 import com.shaul.saidikaV3.services.service_finder_service;
