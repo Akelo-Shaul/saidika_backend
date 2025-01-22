@@ -3,13 +3,11 @@ package com.shaul.saidikaV3.services;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import com.shaul.saidikaV3.entities.offered_services;
-import com.shaul.saidikaV3.entities.service_finder;
 import com.shaul.saidikaV3.requestModels.updateProfile;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +33,7 @@ import com.shaul.saidikaV3.responsemodels.login_response;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.multipart.MultipartFile;
 
-import static org.hibernate.internal.util.collections.ArrayHelper.forEach;
+
 
 @Service
 public class service_provider_service {
@@ -79,10 +77,10 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
         String authorization = authService.loginUser(serviceProvider.getId(), loginRequest.getEmail(), loginRequest.getPassword(), authenticationManager,AccountRoles.PROVIDER);
            if(serviceProvider.getOfferedServices().isEmpty()){
        
-          return ResponseEntity.ok(login_response.builder().message("Login Successful").Authorization(authorization).twoFactorEnabled(authService.get2FAEnabled(serviceProvider.getId(),AccountRoles.PROVIDER)).first_time_login(true).profile_id(serviceProvider.getId()).profile_name(serviceProvider.getFirst_name()).build());}
+          return ResponseEntity.ok(login_response.builder().message("Login Successful").Authorization(authorization).first_time_login(true).profile_id(serviceProvider.getId()).profile_name(serviceProvider.getFirst_name()).build());}
         else 
            
-         return ResponseEntity.ok(login_response.builder().message("Login Successful").Authorization(authorization).twoFactorEnabled(authService.get2FAEnabled(serviceProvider.getId(),AccountRoles.PROVIDER)).first_time_login(false).profile_id(serviceProvider.getId()).profile_name(serviceProvider.getFirst_name()).build());
+         return ResponseEntity.ok(login_response.builder().message("Login Successful").Authorization(authorization).first_time_login(false).profile_id(serviceProvider.getId()).profile_name(serviceProvider.getFirst_name()).build());
         
     }
 
@@ -184,7 +182,8 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
     public String setProfilePhoto(MultipartFile dp,String email) throws IOException {
         //String filename=dp.getOriginalFilename();
         String filename=email+"_photo";
-        String folder_path="C:\\Users\\Administrator\\Desktop\\saidika backend\\saidika_backend\\src\\main\\java\\com\\shaul\\saidikaV3\\profileImages\\";
+         
+       String folder_path="C:\\Users\\Administrator\\Desktop\\saidika backend\\saidika_backend\\src\\main\\java\\com\\shaul\\saidikaV3\\profileImages\\";
         String photo_path=folder_path+filename;
         dp.transferTo(new File(photo_path));
         return photo_path;

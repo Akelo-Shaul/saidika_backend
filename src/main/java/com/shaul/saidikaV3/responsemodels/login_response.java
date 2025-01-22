@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class login_response {
-    private Boolean twoFactorEnabled;
+
     private String message;
     private String Authorization;
     private UUID profile_id;

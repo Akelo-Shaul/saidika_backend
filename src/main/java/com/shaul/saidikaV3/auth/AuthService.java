@@ -73,8 +73,8 @@ public class AuthService {
             AuthorizationToken token=tmpToken.get();
             if (token.isUsable()) {
 
-                //check for 2FA
-               if(check2FA(token)) {
+               
+               //if(check2FA(token)) {
                    if (!request.getRequestURL().toString().endsWith("/checkProfile")) {
                         token.setLastAccess(new Date().getTime());
                         tokenRepository.save(token);
@@ -82,7 +82,9 @@ public class AuthService {
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = getUsernamePasswordAuthenticationToken(username, token);
                     usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                }
+                //}
+            
+            
             }
         }
     }
@@ -102,21 +104,21 @@ public class AuthService {
         return usernamePasswordAuthenticationToken;
     }
 
-    private boolean check2FA(AuthorizationToken token) {
-        if(get2FAEnabled(token.getProfileid(),token.getAccountRole()))
-        {
-            return (token.getAuthenticated()!=null&&token.getAuthenticated());
+    // private boolean check2FA(AuthorizationToken token) {
+    //     if(get2FAEnabled(token.getProfileid(),token.getAccountRole()))
+    //     {
+    //         return (token.getAuthenticated()!=null&&token.getAuthenticated());
 
-        }else
-            return true;
-    }
+    //     }else
+    //         return true;
+    // }
 
-    public Boolean get2FAEnabled(UUID profileId, AccountRoles accountRole)
-    {
-//        Optional<TwoFactor> optionalTwoFactor=twoFactorRepository.findByUserUidAndAccountRole(profileId,accountRole);
+//     public Boolean get2FAEnabled(UUID profileId, AccountRoles accountRole)
+//     {
+//         Optional<TwoFactor> optionalTwoFactor=twoFactorRepository.findByUserUidAndAccountRole(profileId,accountRole);
 //        return optionalTwoFactor.isPresent()&&optionalTwoFactor.get().getIsVerified();
-        return false;
-    }
+//         return false;
+//     }
 
     @SuppressWarnings("unchecked")
     public Users getActiveProfile()
