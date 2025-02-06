@@ -127,7 +127,8 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
     public String setProfilePhoto(MultipartFile dp,String email) throws IOException {
         //String filename=dp.getOriginalFilename();
         String filename=email+"_photo";
-        String folder_path="C:\\Users\\Administrator\\Desktop\\saidika backend\\saidika_backend\\src\\main\\java\\com\\shaul\\saidikaV3\\profileImages\\";
+       // String folder_path="C:\\Users\\Administrator\\Desktop\\saidika backend\\saidika_backend\\src\\main\\java\\com\\shaul\\saidikaV3\\profileImages\\";
+        String folder_path="src/main/java/com/shaul/saidikaV3/profileImages/";
         String photo_path=folder_path+filename;
         dp.transferTo(new File(photo_path));
         return photo_path;

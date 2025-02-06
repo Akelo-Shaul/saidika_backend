@@ -64,6 +64,8 @@ public class SecurityConfig {
                                     ,"/api/v1/finder/register"
                                      ,"/verify_otp"
                                      ,"/send_otp"
+                           ,"/api/v1/provider/active_User"
+                           ,"/api/v1/finder/active_User"
                            ).permitAll()
                            //.requestMatchers("/api/v1/provider/activeUser","/api/v1/services/get_services_offered","/api/v1/services/add_new_service").hasAuthority("PROVIDER")
                            //    .requestMatchers("/api/v1/*").authenticated()
