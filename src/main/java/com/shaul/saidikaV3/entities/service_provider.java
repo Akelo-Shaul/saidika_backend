@@ -14,6 +14,7 @@ import java.util.List;
 @Setter
 @JsonIgnoreProperties({"os"})
 public class service_provider extends Users{
+
     private String availableLocation;
 
     @OneToMany(mappedBy = "provider",fetch= FetchType.LAZY)

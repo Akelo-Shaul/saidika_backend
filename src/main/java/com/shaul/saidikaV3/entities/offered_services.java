@@ -3,6 +3,7 @@ package com.shaul.saidikaV3.entities;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -34,6 +35,7 @@ public class offered_services {
     private String availableLocation;
     private Integer average_rating;
     @ManyToOne
+    @JsonIgnore
     private service_provider provider;
 
     @OneToMany(mappedBy = "offerservices",fetch = FetchType.LAZY)
