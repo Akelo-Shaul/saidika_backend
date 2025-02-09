@@ -27,7 +27,6 @@ public class chatroom {
     List<messages> chat_messages;
 
     @ManyToMany
-
     @JsonProperty("chatters")
     @JoinTable(
             name = "person_chats",

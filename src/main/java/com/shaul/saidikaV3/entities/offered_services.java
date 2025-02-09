@@ -35,7 +35,6 @@ public class offered_services {
     private String availableLocation;
     private Integer average_rating;
     @ManyToOne
-//    @JsonIgnore
     private service_provider provider;
 
     @OneToMany(mappedBy = "offerservices",fetch = FetchType.LAZY)
