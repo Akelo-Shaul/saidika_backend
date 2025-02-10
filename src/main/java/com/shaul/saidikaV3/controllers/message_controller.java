@@ -87,7 +87,7 @@ String recipient_name=find_person(recipient_id).getFirst_name();
    newMessage.setSender(chat_person.getId());
    newMessage.setRecipient(recipient_id);
    newMessage.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-    newMessage.setChat_image_Url(store_photo_image(hj));
+    //newMessage.setChat_image_Url(store_photo_image(hj));
    messagesServices.add_message(newMessage);
 
    return newChatRoom;
