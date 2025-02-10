@@ -39,7 +39,7 @@ public class message_controller {
 
    @PreAuthorize("hasAuthority('FINDER') or hasAuthority('PROVIDER')")
    @PostMapping("/sendMessage/{recipient_id}")
- public chatroom send_message(@PathVariable UUID recipient_id, @RequestPart(value = "msg_model") messages_model msg_mod, @RequestPart(value = "image" ,required = false)MultipartFile hj) throws IOException {
+ public chatroom send_message(@PathVariable UUID recipient_id, @RequestPart(value = "text") String msg, @RequestPart(value = "image" ,required = false)MultipartFile hj) throws IOException {
    List<String> ids = new ArrayList<>();
    Users chat_person=pAuthservervice.getActiveProfile();
    ids.add(String.valueOf(chat_person.getId()));
@@ -78,11 +78,11 @@ String recipient_name=find_person(recipient_id).getFirst_name();
 
 
    }
-   chatService.update_chat(newChatRoom,msg_mod.getText(),Timestamp.valueOf(LocalDateTime.now()),chat_person.getFirst_name(),recipient_name,chat_person.getId(),recipient_id);
+   chatService.update_chat(newChatRoom,msg,Timestamp.valueOf(LocalDateTime.now()),chat_person.getFirst_name(),recipient_name,chat_person.getId(),recipient_id);
    messages newMessage=new messages();
    String m_id=UUID.randomUUID().toString();
    newMessage.setId(m_id);
-   newMessage.setText(msg_mod.getText());
+   newMessage.setText(msg);
    newMessage.setChat(newChatRoom);
    newMessage.setSender(chat_person.getId());
    newMessage.setRecipient(recipient_id);
