@@ -7,5 +7,4 @@ public class commentRatingModel {
     private String comment;
     private Integer rating;
 
-
 }

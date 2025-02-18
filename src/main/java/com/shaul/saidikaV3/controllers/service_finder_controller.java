@@ -90,4 +90,14 @@ public class service_finder_controller {
         return finder_service.get_profilePhoto();
    }
 
+
+
+    @PostMapping("/updatetoken")
+    public String updateToken(@RequestBody String token)
+    {
+
+            return finder_service.update_token(token);
+    }
+
+
 }

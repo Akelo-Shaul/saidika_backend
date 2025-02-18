@@ -9,7 +9,6 @@ import java.util.UUID;
 
 import com.shaul.saidikaV3.entities.offered_services;
 import com.shaul.saidikaV3.requestModels.updateProfile;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,7 +23,6 @@ import com.shaul.saidikaV3.entities.Users;
 import com.shaul.saidikaV3.entities.service_provider;
 import com.shaul.saidikaV3.exceptions.EmailAlreadyRegisteredException;
 import com.shaul.saidikaV3.exceptions.EmailNotFoundException;
-import com.shaul.saidikaV3.exceptions.PasswordsDontMatchException;
 import com.shaul.saidikaV3.repositories.service_provider_repo;
 import com.shaul.saidikaV3.requestModels.loginRequestmodel;
 import com.shaul.saidikaV3.requestModels.registerRequestModel;
@@ -110,6 +108,7 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
         new_service_provider.setEmail(requestModel.getEmail().toLowerCase().trim());
         new_service_provider.setPassword(passwordEncoder.encode(requestModel.getPassword()));
         new_service_provider.setRole(requestModel.getRole());
+        new_service_provider.setNotifToken(requestModel.getNotifTok());
         if(gh != null){
             new_service_provider.setProfile_Photo_Path(setProfilePhoto(gh, requestModel.getEmail()));
             spr.save(new_service_provider);
@@ -202,6 +201,13 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
         fd.setProfile_Photo_Path(setProfilePhoto(dppp,fd.getEmail()));
 
         spr.saveAndFlush(fd);
+        return "updated";
+    }
+    public String update_token(String newToken) throws IOException {
+        service_provider kkfd = find_by_id(authService.getActiveProfile().getId()).orElse(null);
+        kkfd.setNotifToken(newToken);
+
+        spr.saveAndFlush(kkfd);
         return "updated";
     }
 }

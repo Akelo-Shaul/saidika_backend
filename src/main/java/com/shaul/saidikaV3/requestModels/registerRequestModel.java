@@ -42,4 +42,6 @@ public class registerRequestModel {
 
 
     private String location;
+
+    private String notifTok;
 }

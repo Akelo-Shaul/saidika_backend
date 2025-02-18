@@ -97,6 +97,7 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
         new_Service_finder.setEmail(requestModel.getEmail().toLowerCase().trim());
         new_Service_finder.setPassword(passwordEncoder.encode(requestModel.getPassword()));
         new_Service_finder.setRole(requestModel.getRole());
+        new_Service_finder.setNotifToken(requestModel.getNotifTok());
         if (dpp != null){
             new_Service_finder.setProfile_Photo_Path(setProfilePhoto(dpp, requestModel.getEmail()));
             sfr.save(new_Service_finder);
@@ -150,6 +151,13 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
         return "updated";
     }
 
+    public String update_token(String newTok) {
+        service_finder kfd= find_by_id(authService.getActiveProfile().getId()).orElse(null);
+        kfd.setNotifToken(newTok);
+
+        sfr.saveAndFlush(kfd);
+        return "updated";
+    }
 
 
     }

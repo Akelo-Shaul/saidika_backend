@@ -16,6 +16,7 @@ com\shaul\saidikaV3\entities\chatroom.class
 com\shaul\saidikaV3\responsemodels\otpResponse$otpResponseBuilder.class
 com\shaul\saidikaV3\auth\AuthToken\AuthorizationToken$AuthorizationTokenBuilder.class
 com\shaul\saidikaV3\configs\AuthenticationManagers\saidika_provider_AuthenticationManager.class
+com\shaul\saidikaV3\responsemodels\NotificationResponse.class
 com\shaul\saidikaV3\entities\service_provider.class
 com\shaul\saidikaV3\requestModels\registerRequestModel.class
 com\shaul\saidikaV3\entities\comment_rating.class
@@ -27,6 +28,7 @@ com\shaul\saidikaV3\services\commentRating_service.class
 com\shaul\saidikaV3\controllers\service_provider_controller.class
 com\shaul\saidikaV3\services\offered_services_service.class
 com\shaul\saidikaV3\utils\GeneralUtils.class
+com\shaul\saidikaV3\requestModels\NotificationRequest.class
 com\shaul\saidikaV3\auth\saidika_providers_UserDetails\provider_DetailsService.class
 com\shaul\saidikaV3\controllers\offered_services_controller.class
 com\shaul\saidikaV3\auth\AuthToken\TokenRepository.class
@@ -49,9 +51,11 @@ com\shaul\saidikaV3\configs\SecurityConfig.class
 com\shaul\saidikaV3\controllers\message_controller.class
 com\shaul\saidikaV3\repositories\chatroom_repo.class
 com\shaul\saidikaV3\responsemodels\get_chats_response_models.class
+com\shaul\saidikaV3\services\FCMInitializer.class
 com\shaul\saidikaV3\repositories\otpRepo.class
 com\shaul\saidikaV3\entities\Users.class
 com\shaul\saidikaV3\auth\saidika_finders_UserDetails\finder_UserDetails.class
+com\shaul\saidikaV3\controllers\NotificationController.class
 com\shaul\saidikaV3\responsemodels\otpResponse.class
 com\shaul\saidikaV3\services\otpservice.class
 com\shaul\saidikaV3\configs\AuthenticationManagers\saidika_findersAuthenticationManager.class
@@ -62,6 +66,7 @@ com\shaul\saidikaV3\auth\saidika_providers_UserDetails\provider_UserDetails$prov
 com\shaul\saidikaV3\entities\offered_services.class
 com\shaul\saidikaV3\auth\AuthService.class
 com\shaul\saidikaV3\requestModels\registerRequestModel$registerRequestModelBuilder.class
+com\shaul\saidikaV3\services\FCMService.class
 com\shaul\saidikaV3\entities\messages.class
 com\shaul\saidikaV3\entities\otp.class
 com\shaul\saidikaV3\requestModels\updateProfile.class
