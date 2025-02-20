@@ -24,7 +24,7 @@ public class Users {
     private String role;
     private String password;
     private String profile_Photo_Path;
-    private String notifToken;
+    private String notif_token;
 
     @OneToMany(mappedBy = "commenter", fetch = FetchType.LAZY)
     @JsonProperty("comments")

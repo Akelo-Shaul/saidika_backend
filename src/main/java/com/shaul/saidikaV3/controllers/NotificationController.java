@@ -36,9 +36,9 @@ public class NotificationController {
     public String getNotificationTok(@RequestParam("ReceiverID") UUID id) {
         String token;
         if(provider_service.find_by_id(id).isPresent()){
-            token=provider_service.find_by_id(id).get().getNotifToken();
+            token=provider_service.find_by_id(id).get().getNotif_token();
         } else{
-            token = provider_service.find_by_id(id).get().getNotifToken();
+            token = provider_service.find_by_id(id).get().getNotif_token();
         }
         return token;
     }

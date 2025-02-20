@@ -108,7 +108,7 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
         new_service_provider.setEmail(requestModel.getEmail().toLowerCase().trim());
         new_service_provider.setPassword(passwordEncoder.encode(requestModel.getPassword()));
         new_service_provider.setRole(requestModel.getRole());
-        new_service_provider.setNotifToken(requestModel.getNotifTok());
+        new_service_provider.setNotif_token(requestModel.getNotifTok());
         if(gh != null){
             new_service_provider.setProfile_Photo_Path(setProfilePhoto(gh, requestModel.getEmail()));
             spr.save(new_service_provider);
@@ -205,7 +205,7 @@ public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
     }
     public String update_token(String newToken) throws IOException {
         service_provider kkfd = find_by_id(authService.getActiveProfile().getId()).orElse(null);
-        kkfd.setNotifToken(newToken);
+        kkfd.setNotif_token(newToken);
 
         spr.saveAndFlush(kkfd);
         return "updated";
