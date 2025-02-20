@@ -31,7 +31,7 @@ public class service_provider_controller {
 
 
     @PostMapping("/register")
-    public ResponseEntity<String> add_provider(@RequestPart("first_name") String fn,@RequestPart("last_name") String ln,@RequestPart("email")  String eml,@RequestPart("phone") String pn,@RequestPart("password") String pass,@RequestPart("location") String loc,@RequestPart("role") String rol, @RequestPart(value = "profile_pic",required = false)MultipartFile fg) throws IOException {
+    public ResponseEntity<String> add_provider(@RequestPart("first_name") String fn,@RequestPart("last_name") String ln,@RequestPart("email")  String eml,@RequestPart("phone") String pn,@RequestPart("password") String pass,@RequestPart("location") String loc,@RequestPart("role") String rol, @RequestPart(value = "profile_pic",required = false)MultipartFile fg,@RequestPart("notifTok") String notifTok) throws IOException {
         registerRequestModel provider_request_model= new registerRequestModel().builder()
                 .last_name(ln)
                 .first_name(fn)
@@ -40,6 +40,7 @@ public class service_provider_controller {
                 .phone(pn)
                 .location(loc)
                 .password(pass)
+                .notifTok(notifTok)
                 .build();
         return  provider_service.registerProvider(provider_request_model,fg);
     }

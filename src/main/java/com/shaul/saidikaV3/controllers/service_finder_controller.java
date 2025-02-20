@@ -50,7 +50,7 @@ public class service_finder_controller {
 
 
     @PostMapping("/register")
-    public ResponseEntity<String> addFinder(@RequestPart("first_name") String fn,@RequestPart("last_name") String ln,@RequestPart("email")  String eml,@RequestPart("phone") String pn,@RequestPart("password") String pass,@RequestPart("location") String loc,@RequestPart("role") String rol, @RequestPart(value = "profile_pic",required = false)MultipartFile dp) throws IOException {
+    public ResponseEntity<String> addFinder(@RequestPart("first_name") String fn,@RequestPart("last_name") String ln,@RequestPart("email")  String eml,@RequestPart("phone") String pn,@RequestPart("password") String pass,@RequestPart("location") String loc,@RequestPart("role") String rol, @RequestPart(value = "profile_pic",required = false)MultipartFile dp,@RequestPart("notifTok") String notifTok) throws IOException {
         registerRequestModel finder_request_model= new registerRequestModel().builder()
                 .last_name(ln)
                 .first_name(fn)
@@ -59,6 +59,7 @@ public class service_finder_controller {
                 .phone(pn)
                 .location(loc)
                 .password(pass)
+                .notifTok(notifTok)
                 .build();
 
             return  finder_service.registerFinder(finder_request_model,dp);
