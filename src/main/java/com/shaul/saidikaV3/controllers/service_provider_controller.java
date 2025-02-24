@@ -84,4 +84,9 @@ public class service_provider_controller {
     public ResponseEntity<?> getpp() throws IOException {
         return provider_service.get_profilePhoto();
     }
+    @PostMapping("/updatetoken")
+    public String updateToken(@RequestBody String token) throws IOException
+    {
+        return provider_service.update_token(token);
+    }
 }
