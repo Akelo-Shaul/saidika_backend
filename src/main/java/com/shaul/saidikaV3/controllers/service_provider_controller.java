@@ -2,6 +2,8 @@ package com.shaul.saidikaV3.controllers;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import com.shaul.saidikaV3.exceptions.EmailAlreadyRegisteredException;
 import com.shaul.saidikaV3.exceptions.errorResponse;
@@ -57,7 +59,7 @@ public class service_provider_controller {
         return provider_service.activeUser();
     }
 
-@PostMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<login_response> login(@RequestBody @Valid loginRequestmodel loginRequest, BindingResult bindingResult)
     {
         if(bindingResult.hasErrors())
@@ -65,28 +67,38 @@ public class service_provider_controller {
         else
             return provider_service.login(loginRequest);
     }
+
     @PreAuthorize("hasAuthority('PROVIDER')")
     @PostMapping("/update_profile")
     public ResponseEntity<String> profile_update(@RequestBody updateProfile up){
         return provider_service.update_profile(up);
 
     }
+
     @ExceptionHandler(value = EmailAlreadyRegisteredException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public errorResponse handleEmailAlreadyRegisteredException(EmailAlreadyRegisteredException ex) {
         return new errorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
     }
+
     @PostMapping("/updateProfilePhoto")
     public String updatePhoto(@RequestPart("image")MultipartFile profile_pic) throws IOException {
         return provider_service.update_profilePhoto(profile_pic);
     }
+
     @GetMapping("/getpp")
     public ResponseEntity<?> getpp() throws IOException {
         return provider_service.get_profilePhoto();
     }
+
     @PostMapping("/updatetoken")
     public String updateToken(@RequestBody String token) throws IOException
     {
         return provider_service.update_token(token);
+    }
+
+    @PostMapping("/getById/{id}")
+    public Optional<service_provider> getByid(@RequestParam UUID id){
+        return  provider_service.find_by_id(id);
     }
 }

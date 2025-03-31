@@ -45,7 +45,9 @@ public class message_controller {
    ids.add(String.valueOf(chat_person.getId()));
    ids.add(String.valueOf(recipient_id));
    Collections.sort(ids);
-   String chatId = ids.getFirst() + ids.getLast();
+       String chatId = ids.get(0) + ids.get(1);;
+//   String chatId = ids.getFirst() + ids.getLast();
+
      //UUID CHatId= UUID.fromString(chatId);
 String recipient_name=find_person(recipient_id).getFirst_name();
 
