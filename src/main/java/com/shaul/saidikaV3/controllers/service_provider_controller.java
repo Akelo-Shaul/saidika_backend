@@ -97,7 +97,7 @@ public class service_provider_controller {
         return provider_service.update_token(token);
     }
 
-    @PostMapping("/getById/{id}")
+    @GetMapping("/getById/{id}")
     public Optional<service_provider> getByid(@RequestParam UUID id){
         return  provider_service.find_by_id(id);
     }

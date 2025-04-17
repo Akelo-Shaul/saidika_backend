@@ -3,6 +3,7 @@ package com.shaul.saidikaV3.entities;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -12,7 +13,7 @@ import lombok.Data;
 @Data
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@JsonIgnoreProperties({"comments","conversations"})
+//@JsonIgnoreProperties({"comments","conversations"})
 public class Users {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Id
@@ -22,16 +23,21 @@ public class Users {
     private String email;
     private String phone;
     private String role;
+
+    @JsonIgnore
     private String password;
+    @JsonIgnore 
     private String profile_Photo_Path;
     private String notif_token;
 
     @OneToMany(mappedBy = "commenter", fetch = FetchType.LAZY)
     @JsonProperty("comments")
+    @JsonIgnore
     private List<comment_rating> comments;
 
     @ManyToMany(mappedBy = "chat_person")
-    @JsonProperty("conversations")
+    // @JsonProperty("conversations")
+    @JsonIgnore
     private List<chatroom> CHAts;
 
 
