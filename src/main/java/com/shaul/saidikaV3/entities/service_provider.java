@@ -19,8 +19,8 @@ public class service_provider extends Users{
     private String availableLocation;
 
     @OneToMany(mappedBy = "provider",fetch= FetchType.LAZY)
-   
-
+    @JsonProperty("os")
+    @JsonIgnore
     private List<offered_services> offeredServices;
 
 
