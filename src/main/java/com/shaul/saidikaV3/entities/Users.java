@@ -26,13 +26,12 @@ public class Users {
 
     @JsonIgnore
     private String password;
-    @JsonIgnore 
+    // @JsonIgnore 
     private String profile_Photo_Path;
     private String notif_token;
 
     @OneToMany(mappedBy = "commenter", fetch = FetchType.LAZY)
-    @JsonProperty("comments")
-    @JsonIgnore
+    //@JsonProperty("comments")
     private List<comment_rating> comments;
 
     @ManyToMany(mappedBy = "chat_person")
