@@ -2,6 +2,7 @@ package com.shaul.saidikaV3.entities;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -29,6 +30,7 @@ public class comment_rating {
 
     @ManyToOne
     @JsonProperty("os")
+    @JsonIgnore
     private offered_services offerservices;
 
 

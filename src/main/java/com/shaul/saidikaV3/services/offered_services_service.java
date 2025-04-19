@@ -21,6 +21,9 @@ public class offered_services_service {
     @Autowired
     offered_services_repository osr;
 
+   
+
+
     @Autowired
     private  AuthService authService;
 
@@ -38,9 +41,16 @@ public class offered_services_service {
    return ResponseEntity.status(HttpStatus.CREATED).body(new add_service_reponse("service saved"));
        
     }
+
     public Optional<offered_services> find_service_by_id(UUID id){
         return osr.findById(id);
     }
+
+ 
+    
+
+
+
 
     public ResponseEntity<List<offered_services>> my_services() {
         return ResponseEntity.ok(osr.findByProvider((service_provider)authService.getActiveProfile()));

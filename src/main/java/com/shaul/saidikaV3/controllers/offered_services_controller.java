@@ -11,7 +11,7 @@ import com.shaul.saidikaV3.utils.GeneralUtils;
 import jakarta.validation.Valid;
 
 import java.util.List;
-
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -54,6 +54,11 @@ if(bindingResult.hasErrors())
     
         return oss.my_services();
    }
+
+ 
+
+
+
    @PreAuthorize("hasAuthority('FINDER') or hasAuthority('PROVIDER')")
    @GetMapping("/get_all_services_offered")
    public ResponseEntity<List<offered_services>> get_all_ServicesOffered (){

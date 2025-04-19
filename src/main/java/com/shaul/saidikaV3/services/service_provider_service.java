@@ -57,7 +57,7 @@ offered_services_service ghj;
     // public service_provider add_provider(service_provider sp){
     //     return spr.save(sp);
     // }
-
+    
     public Optional<service_provider> find_by_id(UUID id){
         return spr.findById(id);
     }
@@ -65,6 +65,14 @@ offered_services_service ghj;
     public List<service_provider> get_all_providers() {
         return spr.findAll();
     }
+
+    public ResponseEntity<List<offered_services>> find_service_by_Providerid(UUID id){
+        service_provider gj =spr.findById(id).orElse(null);
+        return  ResponseEntity.ok(gj.getOfferedServices());
+        
+}
+
+
 public ResponseEntity<login_response> login(loginRequestmodel loginRequest) {
 
         Optional<service_provider> provOptional = spr.findByEmail(loginRequest.getEmail());

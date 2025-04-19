@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import com.shaul.saidikaV3.entities.offered_services;
 import com.shaul.saidikaV3.entities.service_provider;
 import com.shaul.saidikaV3.requestModels.loginRequestmodel;
 import com.shaul.saidikaV3.requestModels.registerRequestModel;
@@ -101,4 +102,12 @@ public class service_provider_controller {
     public Optional<service_provider> getByid(@RequestParam UUID id){
         return  provider_service.find_by_id(id);
     }
+
+  @PreAuthorize("hasAuthority('FINDER') or hasAuthority('PROVIDER')")
+   @GetMapping("/get_services_by_provider_id/{id}")
+   public ResponseEntity<List<offered_services>> get_Services_Offered_by_providerId(@RequestParam UUID id){
+   
+       return provider_service.find_service_by_Providerid(id);
+  }
+
 }
