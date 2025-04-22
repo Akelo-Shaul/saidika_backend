@@ -156,7 +156,7 @@ public class AuthService {
         HashMap<String,String> claims=new HashMap<>();
         claims.put(AccountRoles.class.getSimpleName(),accountRole.name());
         String token = Jwts.builder().setClaims(claims).setSubject(username).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(168)))
+                .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(30)))
                 .signWith(SignatureAlgorithm.HS256, SecurityConfig.jwtSecretKey).compact();
 
         AuthorizationToken authorizationTokens=AuthorizationToken.builder()

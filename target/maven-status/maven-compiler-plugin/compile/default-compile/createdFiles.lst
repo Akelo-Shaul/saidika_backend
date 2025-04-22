@@ -47,6 +47,7 @@ com\shaul\saidikaV3\auth\saidika_finders_UserDetails\finder_UserDetails$finder_U
 com\shaul\saidikaV3\entities\service_finder.class
 com\shaul\saidikaV3\requestModels\offered_services_model.class
 com\shaul\saidikaV3\utils\imageUtils.class
+com\shaul\saidikaV3\controllers\MpesaCallbackController.class
 com\shaul\saidikaV3\configs\SecurityConfig.class
 com\shaul\saidikaV3\controllers\message_controller.class
 com\shaul\saidikaV3\repositories\chatroom_repo.class
