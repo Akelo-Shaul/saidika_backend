@@ -66,7 +66,8 @@ public class SecurityConfig {
                                      ,"/send_otp"
                            ,"/api/v1/provider/activeUser"
                            ,"/api/v1/finder/activeUser"
-                           ,"/notification" +
+                           ,"/notification"
+                           ,"/mpesa" +
                                            ""
                            ).permitAll()
                            //.requestMatchers("/api/v1/provider/activeUser","/api/v1/services/get_services_offered","/api/v1/services/add_new_service").hasAuthority("PROVIDER")
