@@ -12,7 +12,7 @@ public class MpesaCallbackController {
     private Map<String, Object> lastResponse;
 
     @PostMapping("/callback")
-    public ResponseEntity<Map<String, Object>> receiveCallback(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<?> receiveCallback(@RequestBody Map<String, Object> payload) {
         try {
             String prettyJson = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(payload);
             System.out.println("=== M-Pesa Callback Received ===");
@@ -23,18 +23,20 @@ public class MpesaCallbackController {
 
         lastResponse = payload;
 
-        return ResponseEntity.ok(Map.of(
-                "ResultCode", 0,
-                "ResultDesc", "Callback received successfully"
-        ));
+        return ResponseEntity.ok(payload);
+
+        // return ResponseEntity.ok(Map.of(
+        //         "ResultCode", 0,
+        //         "ResultDesc", "Callback received successfully"
+        // ));
     }
 
-    @GetMapping("/last-response")
-    public ResponseEntity<Object> getLastResponse() {
-        if (lastResponse != null) {
-            return ResponseEntity.ok(Map.of("success", true, "data", lastResponse));
-        } else {
-            return ResponseEntity.ok(Map.of("success", false, "message", "No callback yet"));
-        }
-    }
+    // @GetMapping("/last-response")
+    // public ResponseEntity<Object> getLastResponse() {
+    //     if (lastResponse != null) {
+    //         return ResponseEntity.ok(Map.of("success", true, "data", lastResponse));
+    //     } else {
+    //         return ResponseEntity.ok(Map.of("success", false, "message", "No callback yet"));
+    //     }
+    // }
 }
