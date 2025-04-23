@@ -67,7 +67,7 @@ public class SecurityConfig {
                            ,"/api/v1/provider/activeUser"
                            ,"/api/v1/finder/activeUser"
                            ,"/notification"
-                           ,"/mpesa/last-response" +
+                           ,"last-response" +
                                            ""
                            ).permitAll()
                            //.requestMatchers("/api/v1/provider/activeUser","/api/v1/services/get_services_offered","/api/v1/services/add_new_service").hasAuthority("PROVIDER")
