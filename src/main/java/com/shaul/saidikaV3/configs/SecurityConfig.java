@@ -67,7 +67,7 @@ public class SecurityConfig {
                            ,"/api/v1/provider/activeUser"
                            ,"/api/v1/finder/activeUser"
                            ,"/notification"
-                           ,"/last-response","/callback" ).permitAll()
+                           ,"/last-response/{checkoutRequestID}","/callback" ).permitAll()
                            //.requestMatchers("/api/v1/provider/activeUser","/api/v1/services/get_services_offered","/api/v1/services/add_new_service").hasAuthority("PROVIDER")
                            //    .requestMatchers("/api/v1/*").authenticated()
                            .anyRequest().authenticated();

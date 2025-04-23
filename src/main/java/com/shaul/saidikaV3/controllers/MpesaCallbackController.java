@@ -1,42 +1,89 @@
 package com.shaul.saidikaV3.controllers;
 
-import java.util.HashMap;
-import java.util.Map;
-import org.springframework.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
+
 public class MpesaCallbackController {
 
-    private Map<String, Object> lastCallbackResponse;
+    private static final Logger logger = LoggerFactory.getLogger(MpesaCallbackController.class);
+    private final Map<String, Map<String, Object>> responseStore = new ConcurrentHashMap<>(); // Thread-safe storage
 
     @PostMapping("/callback")
     public ResponseEntity<Map<String, Object>> receiveCallback(@RequestBody Map<String, Object> payload) {
-        System.out.println("M-Pesa Callback Received:\n" + payload);
-        lastCallbackResponse = payload;
-        return ResponseEntity.ok(Map.of(
-                "ResultCode", 0,
-                "ResultDesc", "Callback received successfully"
-        ));
+        try {
+            logger.info("M-Pesa Callback Received: {}", payload);
+
+            // Validate payload structure
+            if (payload == null || !payload.containsKey("Body")) {
+                logger.error("Invalid callback payload: Missing 'Body'");
+                return ResponseEntity.badRequest().body(Map.of(
+                        "ResultCode", 1,
+                        "ResultDesc", "Invalid payload"
+                ));
+            }
+
+            // Extract relevant fields (e.g., CheckoutRequestID for storage)
+            @SuppressWarnings("unchecked")
+            Map<String, Object> body = (Map<String, Object>) payload.get("Body");
+            @SuppressWarnings("unchecked")
+            Map<String, Object> stkCallback = (Map<String, Object>) body.get("stkCallback");
+            String checkoutRequestID = (String) stkCallback.get("CheckoutRequestID");
+
+            if (checkoutRequestID == null) {
+                logger.error("Missing CheckoutRequestID in callback payload");
+                return ResponseEntity.badRequest().body(Map.of(
+                        "ResultCode", 1,
+                        "ResultDesc", "Missing CheckoutRequestID"
+                ));
+            }
+
+            // Store the response by CheckoutRequestID
+            responseStore.put(checkoutRequestID, payload);
+            logger.info("Stored callback for CheckoutRequestID: {}", checkoutRequestID);
+
+            return ResponseEntity.ok(Map.of(
+                    "ResultCode", 0,
+                    "ResultDesc", "Callback received successfully"
+            ));
+        } catch (Exception e) {
+            logger.error("Error processing callback: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body(Map.of(
+                    "ResultCode", 1,
+                    "ResultDesc", "Error processing callback"
+            ));
+        }
     }
 
-    @GetMapping("/last-response")
-    public ResponseEntity<Map<String, Object>> getLastResponse() {
-        if (lastCallbackResponse != null) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("data", lastCallbackResponse);
-            return ResponseEntity.ok(response);
-        } else {
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", false);
-            response.put("message", "No callback received yet.");
-            return ResponseEntity.ok(response);
+    @GetMapping("/last-response/{checkoutRequestID}")
+    public ResponseEntity<Map<String, Object>> getLastResponse(@PathVariable String checkoutRequestID) {
+        try {
+            Map<String, Object> lastResponse = responseStore.get(checkoutRequestID);
+            if (lastResponse != null) {
+                logger.info("Retrieved response for CheckoutRequestID: {}", checkoutRequestID);
+                return ResponseEntity.ok(Map.of(
+                        "success", true,
+                        "data", lastResponse
+                ));
+            } else {
+                logger.warn("No callback found for CheckoutRequestID: {}", checkoutRequestID);
+                return ResponseEntity.ok(Map.of(
+                        "success", false,
+                        "message", "No callback found for the provided CheckoutRequestID"
+                ));
+            }
+        } catch (Exception e) {
+            logger.error("Error retrieving last response: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body(Map.of(
+                    "success", false,
+                    "message", "Error retrieving response"
+            ));
         }
     }
 }
