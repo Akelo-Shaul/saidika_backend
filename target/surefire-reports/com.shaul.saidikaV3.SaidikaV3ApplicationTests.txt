@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.shaul.saidikaV3.SaidikaV3ApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 28.72 s -- in com.shaul.saidikaV3.SaidikaV3ApplicationTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 22.60 s -- in com.shaul.saidikaV3.SaidikaV3ApplicationTests

@@ -1,6 +1,7 @@
 com\shaul\saidikaV3\requestModels\messages_model.class
 com\shaul\saidikaV3\responsemodels\login_response$login_responseBuilder.class
 com\shaul\saidikaV3\controllers\user_controller.class
+com\shaul\saidikaV3\requestModels\mpesacallback.class
 com\shaul\saidikaV3\responsemodels\add_service_reponse$add_service_reponseBuilder.class
 com\shaul\saidikaV3\auth\AuthToken\AuthorizationToken.class
 com\shaul\saidikaV3\controllers\service_finder_controller.class
@@ -11,6 +12,7 @@ com\shaul\saidikaV3\exceptions\EmailNotFoundException.class
 com\shaul\saidikaV3\repositories\users_repo.class
 com\shaul\saidikaV3\repositories\offered_services_repository.class
 com\shaul\saidikaV3\auth\JWTTOkenFilter.class
+com\shaul\saidikaV3\requestModels\stkCallback.class
 com\shaul\saidikaV3\repositories\comment_rating_repo.class
 com\shaul\saidikaV3\entities\chatroom.class
 com\shaul\saidikaV3\responsemodels\otpResponse$otpResponseBuilder.class
@@ -22,6 +24,7 @@ com\shaul\saidikaV3\requestModels\registerRequestModel.class
 com\shaul\saidikaV3\entities\comment_rating.class
 com\shaul\saidikaV3\emaildetails$emaildetailsBuilder.class
 com\shaul\saidikaV3\exceptions\errorResponse.class
+com\shaul\saidikaV3\services\AutoWired.class
 com\shaul\saidikaV3\repositories\service_finder_repo.class
 com\shaul\saidikaV3\SaidikaV3Application.class
 com\shaul\saidikaV3\services\commentRating_service.class
@@ -41,7 +44,9 @@ com\shaul\saidikaV3\controllers\otpController.class
 com\shaul\saidikaV3\controllers\comment_rating_controller.class
 com\shaul\saidikaV3\exceptions\EmailAlreadyRegisteredException.class
 com\shaul\saidikaV3\responsemodels\login_response.class
+com\shaul\saidikaV3\services\MpesaCallbackService.class
 com\shaul\saidikaV3\services\service_provider_service.class
+com\shaul\saidikaV3\entities\MpesaCallback.class
 com\shaul\saidikaV3\exceptions\PasswordsDontMatchException.class
 com\shaul\saidikaV3\auth\saidika_finders_UserDetails\finder_UserDetails$finder_UserDetailsBuilder.class
 com\shaul\saidikaV3\entities\service_finder.class
@@ -51,6 +56,7 @@ com\shaul\saidikaV3\controllers\MpesaCallbackController.class
 com\shaul\saidikaV3\configs\SecurityConfig.class
 com\shaul\saidikaV3\controllers\message_controller.class
 com\shaul\saidikaV3\repositories\chatroom_repo.class
+com\shaul\saidikaV3\repositories\MpesaCallbackRepository.class
 com\shaul\saidikaV3\responsemodels\get_chats_response_models.class
 com\shaul\saidikaV3\services\FCMInitializer.class
 com\shaul\saidikaV3\repositories\otpRepo.class
@@ -60,6 +66,8 @@ com\shaul\saidikaV3\controllers\NotificationController.class
 com\shaul\saidikaV3\responsemodels\otpResponse.class
 com\shaul\saidikaV3\services\otpservice.class
 com\shaul\saidikaV3\configs\AuthenticationManagers\saidika_findersAuthenticationManager.class
+com\shaul\saidikaV3\requestModels\Item.class
+com\shaul\saidikaV3\requestModels\Body.class
 com\shaul\saidikaV3\requestModels\VerifyCodeRequest.class
 com\shaul\saidikaV3\requestModels\VerifyCodeRequest$VerifyCodeRequestBuilder.class
 com\shaul\saidikaV3\utils\ConvertionUtils.class
@@ -76,7 +84,9 @@ com\shaul\saidikaV3\entities\otp$otpBuilder.class
 com\shaul\saidikaV3\entities\offered_services$offered_servicesBuilder.class
 com\shaul\saidikaV3\requestModels\loginRequestmodel.class
 com\shaul\saidikaV3\controllers\EmailController.class
+com\shaul\saidikaV3\entities\MpesaCallback$MpesaCallbackBuilder.class
 com\shaul\saidikaV3\services\service_finder_service.class
 com\shaul\saidikaV3\repositories\service_provider_repo.class
 com\shaul\saidikaV3\auth\saidika_finders_UserDetails\finder_DetailsService.class
+com\shaul\saidikaV3\requestModels\callbackMetadata.class
 com\shaul\saidikaV3\requestModels\commentRatingModel.class

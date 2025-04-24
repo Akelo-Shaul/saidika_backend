@@ -1,42 +1,48 @@
 package com.shaul.saidikaV3.controllers;
 
-import java.util.Map;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.shaul.saidikaV3.entities.MpesaCallback;
+import com.shaul.saidikaV3.repositories.MpesaCallbackRepository;
+import com.shaul.saidikaV3.requestModels.Body;
+import com.shaul.saidikaV3.requestModels.mpesacallback;
+import com.shaul.saidikaV3.services.AutoWired;
+import com.shaul.saidikaV3.services.MpesaCallbackService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+
+
 
 @RestController
 public class MpesaCallbackController {
-
-    private Map<String, Object> lastResponse;
+    
+      @Autowired
+      private MpesaCallbackRepository mpr;
 
     @PostMapping("/callback")
-    public ResponseEntity<?> receiveCallback(@RequestBody Map<String, Object> payload) {
-        try {
-            String prettyJson = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(payload);
-            System.out.println("=== M-Pesa Callback Received ===");
-            System.out.println(prettyJson);
-        } catch (Exception e) {
-            System.out.println("Error printing JSON: " + e.getMessage());
-        }
+    public ResponseEntity<?> handleMpesaCallback(@RequestBody mpesacallback callbackJson) {
+        MpesaCallback mpb=MpesaCallback.builder()
+        .merchantRequestID(callbackJson.getBody().getStkCallback().getMerchantRequestID())
+        .checkoutRequestID(callbackJson.getBody().getStkCallback().getCheckoutRequestID())
+        .resultCode(callbackJson.getBody().getStkCallback().getResultCode())
+        .resultDesc(callbackJson.getBody().getStkCallback().getResultDesc())
+        .build();
 
-        lastResponse = payload;
-
-        return ResponseEntity.ok(payload);
-
-        // return ResponseEntity.ok(Map.of(
-        //         "ResultCode", 0,
-        //         "ResultDesc", "Callback received successfully"
-        // ));
+        return ResponseEntity.ok(mpr.save(mpb));
     }
 
-    // @GetMapping("/last-response")
-    // public ResponseEntity<Object> getLastResponse() {
-    //     if (lastResponse != null) {
-    //         return ResponseEntity.ok(Map.of("success", true, "data", lastResponse));
-    //     } else {
-    //         return ResponseEntity.ok(Map.of("success", false, "message", "No callback yet"));
-    //     }
-    // }
+@GetMapping("/last-response/{checkoutRequestID}")
+public MpesaCallback getMethodName(@PathVariable String checkoutRequestID) {
+    return mpr.findByCheckoutRequestID(checkoutRequestID).orElse(null);
+}
+
+
+
 }
