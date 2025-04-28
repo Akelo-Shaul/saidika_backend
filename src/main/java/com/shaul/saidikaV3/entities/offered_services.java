@@ -38,7 +38,7 @@ public class offered_services {
     private service_provider provider;
 
     @OneToMany(mappedBy = "offerservices",fetch = FetchType.LAZY)
-    @JsonProperty("rvs")
+
     private List<comment_rating> reviews;
 
 }

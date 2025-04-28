@@ -72,6 +72,7 @@ com\shaul\saidikaV3\requestModels\VerifyCodeRequest.class
 com\shaul\saidikaV3\requestModels\VerifyCodeRequest$VerifyCodeRequestBuilder.class
 com\shaul\saidikaV3\utils\ConvertionUtils.class
 com\shaul\saidikaV3\auth\saidika_providers_UserDetails\provider_UserDetails$provider_UserDetailsBuilder.class
+com\shaul\saidikaV3\chat_Images\defaultprofile (1).png
 com\shaul\saidikaV3\entities\offered_services.class
 com\shaul\saidikaV3\auth\AuthService.class
 com\shaul\saidikaV3\requestModels\registerRequestModel$registerRequestModelBuilder.class
